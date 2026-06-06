@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>IMF SECURE NODE: C-08</title>
+    <style>
+        :root {
+            --pink: #ff007f;
+            --cyan: #00ffff;
+            --dark: #050505;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none; /* Obliterates Safari's magnifying lens text popup */
+        }
+
+        body, html {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh; /* Force modern Safari to track exact viewport dimensions */
+            background-color: var(--dark);
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            position: relative;
+            overscroll-behavior: none; /* Disables Safari elastic rubber-banding drag */
+        }
+
+        /* Screen States */
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100dvh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Screen 0: Initializer Gate */
+        #screen-gate {
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #111 0%, #000 100%);
+        }
+
+        .gate-btn {
+            background: transparent;
+            border: 2px solid var(--pink);
+            color: var(--pink);
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--pink);
+            text-shadow: 0 0 5px var(--pink);
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Screen 1: Terminal & Biometric */
+        #screen-one {
+            padding: 20px;
+            position: relative;
+            height: 100dvh;
+        }
+
+        #terminal-log {
+            width: 100%;
+            height: 45%;
+            overflow: hidden;
+            color: var(--pink);
+            font-size: 14px;
+            line-height: 1.4;
+            text-shadow: 0 0 2px var(--pink);
+            white-space: pre-wrap;
+        }
+
+        .scanning-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--pink);
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: blink 0.8s infinite alternate;
+            text-shadow: 0 0 8px var(--pink);
+        }
+
+        .biometric-container {
+            height: 55%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .thumbprint-btn {
+            width: 110px;
+            height: 130px;
+            background: transparent;
+            border: 2px dashed var(--pink);
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            outline: none;
+            touch-action: none; /* Stops webview from moving under finger pressure */
+        }
+
+        .thumbprint-btn svg {
+            width: 75px;
+            fill: var(--pink);
+            filter: drop-shadow(0 0 5px var(--pink));
+        }
+
+        .scan-bar {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--pink);
+            box-shadow: 0 0 10px var(--pink);
+            animation: scanUpDown 2s infinite ease-in-out;
+            display: none;
+        }
+
+        .status-text {
+            color: var(--pink);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            height: 24px;
+        }
+
+        /* Screen 2: Dynamic Scan Split */
+        #screen-two {
+            padding: 20px;
+            height: 100dvh;
+        }
+
+        .identity-header {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--cyan);
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            animation: blink 0.5s infinite alternate;
+            text-shadow: 0 0 10px var(--cyan);
+            visibility: hidden;
+        }
+
+        .split-container {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            height: calc(100% - 60px);
+            gap: 20px;
+        }
+
+        .left-panel, .right-panel {
+            flex: 1;
+            border: 1px solid #333;
+            background: #0a0a0a;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .body-scan-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .laser-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--cyan);
+            box-shadow: 0 0 12px var(--cyan);
+            animation: scanUpDown 2.5s infinite ease-in-out;
+            z-index: 5;
+        }
+
+        .reveal-box {
+            position: relative;
+            width: auto;
+            height: 85%;
+            aspect-ratio: 108 / 191;
+            overflow: hidden;
+        }
+
+        .reveal-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .reveal-curtain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a0a;
+            transition: transform linear;
+            transform-origin: bottom;
+        }
+
+        /* Screen 3: Tactical Dashboard Layout Optimized */
+        #screen-three {
+            padding: 20px;
+            height: 100dvh;
+            gap: 15px;
+        }
+
+        .dashboard-grid {
+            display: flex;
+            flex: 1;
+            gap: 15px;
+            width: 100%;
+            min-height: 0; /* Keeps layout items from forcing out of viewport margins */
+        }
+
+        .dash-card {
+            flex: 1;
+            background: #0d0d0d;
+            border: 1px solid #222;
+            padding: 20px;
+            border-radius: 5px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .dash-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 10px; height: 10px;
+            border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan);
+        }
+
+        .profile-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .profile-pic {
+            width: 110px;
+            height: 130px;
+            border: 2px solid var(--cyan);
+            object-fit: cover;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .credentials {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .credentials strong {
+            color: var(--cyan);
+            text-shadow: 0 0 2px var(--cyan);
+        }
+
+        .emblem-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 600px;
+        }
+
+        .custom-logo {
+            width: 480px; /* Scaled up 3x from original 160px */
+            height: 480px; /* Scaled up 3x from original 160px */
+            object-fit: contain;
+            animation: spinY 4s infinite linear;
+            transform-style: preserve-3d;
+            filter: drop-shadow(0 0 15px var(--pink));
+        }
+
+        .countdown-footer {
+            width: 100%;
+            height: 110px; /* Expanded slightly to house the taller doubled text elements comfortably */
+            background: #000;
+            border: 1px solid rgba(255, 0, 127, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.8rem; /* Doubled text scale parameters */
+            color: var(--pink);
+            font-weight: bold;
+            text-shadow: 0 0 12px var(--pink);
+            letter-spacing: 2px;
+            flex-shrink: 0; /* Protects bottom banner from squishing down */
+        }
+
+        .countdown-segment {
+            display: inline-block;
+            margin: 0 12px;
+        }
+
+        .countdown-label {
+            font-size: 1.3rem; /* Scaled cleanly alongside larger numerals */
+            color: rgba(255, 0, 127, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 6px;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        @keyframes scanUpDown {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        @keyframes spinY {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        /* Fallback adjustments if viewport flips vertical */
+        @media (max-width: 768px) {
+            .split-container { flex-direction: column; }
+            .dashboard-grid { flex-direction: column; }
+            #terminal-log { height: 35%; }
+            .biometric-container { height: 65%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="screen-gate" class="screen active">
+        <button class="gate-btn" onclick="initializeSystem()">INITIALIZE SECURE UPLINK</button>
+    </div>
+
+    <div id="screen-one" class="screen">
+        <div class="scanning-overlay">SCANNING BIOMETRIC SIGNATURE...</div>
+        <div id="terminal-log"></div>
+        <div class="biometric-container">
+            <button class="thumbprint-btn" id="thumb-btn" onmousedown="startBiometricScan(event)" ontouchstart="startBiometricScan(event)" onmouseup="cancelBiometricScan()" ontouchend="cancelBiometricScan()">
+                <div class="scan-bar" id="scanner-line"></div>
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"/>
+                </svg>
+            </button>
+            <div class="status-text" id="scan-status">PLACE THUMB TO ACCESS</div>
+        </div>
+    </div>
+
+    <div id="screen-two" class="screen">
+        <div class="identity-header" id="ident-header">IDENTITY CONFIRMED</div>
+        <div class="split-container">
+            <div class="left-panel">
+                <div class="body-scan-container">
+                    <div class="laser-line"></div>
+                    <img src="https://github.com/mateo1919/dashboard-images/blob/main/face%20blue.jpg?raw=true" style="height: 90%; width: 90%; object-fit: contain; filter: drop-shadow(0 0 6px var(--cyan));" alt="Left Panel Scan Data">
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="reveal-box">
+                    <img src="Claire narrow.jpg" alt="Claire narrow.jpg">
+                    <div class="reveal-curtain" id="image-curtain"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-three" class="screen">
+        <div class="dashboard-grid">
+            <div class="dash-card">
+                <h3 style="color:var(--cyan); letter-spacing:1px;">ACCESSING FILE ON AGENT CLAIRE</h3>
+                <div class="profile-section">
+                    <img src="https://github.com/mateo1919/dashboard-images/blob/main/image%20dashboard.jpg?raw=true" class="profile-pic" alt="Agent Claire Profile">
+                    <div class="credentials">
+                        <p><strong>DESIGNATION:</strong> Agent C-08</p>
+                        <p><strong>CLEARANCE:</strong> Level 8 (Advanced)</p>
+                        <p><strong>STATUS:</strong> Active / On Mission</p>
+                        <p><strong>ASSIGNMENT:</strong> Celebrating</p>
+                        <p><strong>SPECIALIZATION:</strong> Advanced Reading & Code Breaking</p>
+                    </div>
+                </div>
+                <div style="font-size:11px; color:#555; border-top:1px solid #222; padding-top:10px;">
+                    WARNING: Internal Agency Classified Employee Data. Unauthorized Access Will Activate Party Pooper Protocols.
+                </div>
+            </div>
+
+            <div class="dash-card" style="align-items: center; justify-content: center;">
+                <h3 style="color:var(--pink); letter-spacing:1px; width: 100%; text-align: center;">The Agency Shield</h3>
+                <div class="emblem-wrapper">
+                    <img class="custom-logo" src="https://github.com/mateo1919/dashboard-images/blob/main/agency-no%20background.png?raw=true" alt="IMF Logo Emblem">
+                </div>
+            </div>
+        </div>
+        <div class="countdown-footer" id="countdown-clock"></div>
+    </div>
+
+    <script>
+        class AudioSynth {
+            constructor() {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            playBeep(freq, duration, type="sine") {
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            }
+            playScreamEffect() {
+                let interval = setInterval(() => {
+                    this.playBeep(Math.random() * 800 + 400, 0.05, 'sawtooth');
+                }, 40);
+                setTimeout(() => clearInterval(interval), 2500);
+            }
+        }
+
+        let audio;
+        let scanTimer;
+        let isAuthorized = false;
+
+        function initializeSystem() {
+            audio = new AudioSynth();
+            
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) { elem.requestFullscreen(); }
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+
+            document.getElementById('screen-gate').classList.remove('active');
+            document.getElementById('screen-one').classList.add('active');
+            
+            audio.playScreamEffect();
+            runTerminalLogs();
+        }
+
+        const logs = [
+            "SCANNING INTERNET FOR AGENT CLAIRE... [FOUND]",
+            "ESTABLISHING TOP SECRET BIRTHDAY UPLINK...",
+            "WARNING: CAKE DETECTORS BLOWING UP THE RADAR!",
+            "DECRYPTING ULTIMATE PARTY PROTOCOLS...",
+            "DEFEATING EVIL DR. BORING'S SNEAKY FIREWALLS... [BOOM! OK]",
+            "ALERT: CANDLE COUNT IS RISING RAPIDLY!",
+            "DOWNLOADING INTEL PACKET: 'HOW TO BE AN ELITE 8-YEAR-OLD'...",
+            "LOCALIZING THE DREADED ICE CREAM SEIZURE SUB-ROUTINE...",
+            "CONFIRMING DOSSIER DESIGNATION: AGENT C-08...",
+            "CRITICAL PROTOCOL REQUEST: BIOMETRIC IDENTITY CONFIRMATION REQUIRED."
+        ];
+
+        function runTerminalLogs() {
+            const container = document.getElementById('terminal-log');
+            let logIndex = 0;
+            
+            function addLogLine() {
+                if (logIndex < logs.length) {
+                    container.innerHTML += `> ${logs[logIndex]}\n`;
+                    container.scrollTop = container.scrollHeight;
+                    audio.playBeep(600, 0.03, 'square');
+                    logIndex++;
+                    setTimeout(addLogLine, Math.random() * 250 + 150);
+                }
+            }
+            addLogLine();
+        }
+
+        function startBiometricScan(e) {
+            if (e && e.cancelable) e.preventDefault();
+            if (isAuthorized) return;
+
+            document.getElementById('scanner-line').style.display = 'block';
+            document.getElementById('scan-status').innerText = "PROCESSING...";
+            document.getElementById('scan-status').style.color = "var(--cyan)";
+            
+            let progress = 0;
+            clearInterval(scanTimer);
+            
+            scanTimer = setInterval(() => {
+                progress += 10;
+                audio.playBeep(200 + progress * 5, 0.05, 'sine');
+                if (progress >= 100) {
+                    clearInterval(scanTimer);
+                    isAuthorized = true;
+                    transitionToPageTwo();
+                }
+            }, 250);
+        }
+
+        function cancelBiometricScan() {
+            if (isAuthorized) return;
+            
+            clearInterval(scanTimer);
+            const line = document.getElementById('scanner-line');
+            const status = document.getElementById('scan-status');
+            
+            if (line) line.style.display = 'none';
+            if (status) {
+                status.innerText = "PLACE THUMB TO ACCESS";
+                status.style.color = "var(--pink)";
+            }
+        }
+
+        function transitionToPageTwo() {
+            document.getElementById('screen-one').classList.remove('active');
+            document.getElementById('screen-two').classList.add('active');
+            
+            let intervalBeeps = setInterval(() => {
+                audio.playBeep(800, 0.02, 'sine');
+            }, 80);
+
+            const curtain = document.getElementById('image-curtain');
+            let position = 100;
+            
+            let revealInterval = setInterval(() => {
+                position -= 0.8; 
+                curtain.style.transform = `scaleY(${position / 100})`;
+                
+                if (position <= 0) {
+                    clearInterval(revealInterval);
+                    clearInterval(intervalBeeps);
+                    
+                    document.getElementById('ident-header').style.visibility = 'visible';
+                    audio.playBeep(880, 0.3, 'square');
+                    setTimeout(() => audio.playBeep(1100, 0.5, 'square'), 150);
+                    
+                    setTimeout(transitionToDashboard, 3000);
+                }
+            }, 35);
+        }
+
+        function transitionToDashboard() {
+            document.getElementById('screen-two').classList.remove('active');
+            document.getElementById('screen-three').classList.add('active');
+            startCountdown();
+        }
+
+        function startCountdown() {
+            const targetDate = new Date("June 20, 2026 09:00:00").getTime();
+            const container = document.getElementById('countdown-clock');
+
+            function updateClock() {
+                const now = new Date().getTime();
+                const difference = targetDate - now;
+
+                if (difference <= 0) {
+                    container.innerHTML = "MISSION ACTIVE: GO TIME";
+                    return;
+                }
+
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                const dStr = days.toString().padStart(2, '0');
+                const hStr = hours.toString().padStart(2, '0');
+                const mStr = minutes.toString().padStart(2, '0');
+                const sStr = seconds.toString().padStart(2, '0');
+
+                container.innerHTML = `
+                    T-MINUS 
+                    <span class="countdown-segment">${dStr}<span class="countdown-label">Days</span></span>:
+                    <span class="countdown-segment">${hStr}<span class="countdown-label">Hours</span></span>:
+                    <span class="countdown-segment">${mStr}<span class="countdown-label">Minutes</span></span>:
+                    <span class="countdown-segment">${sStr}<span class="countdown-label">Seconds</span></span>
+                `;
+            }
+
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+    </script>
+</body>
+</html>
