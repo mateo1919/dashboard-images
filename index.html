@@ -78,6 +78,12 @@
             text-shadow: 0 0 2px var(--pink);
             white-space: pre-wrap;
         }
+        .scanner-graphic {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;  /* Keeps the image aspect ratio perfect without warping */
+    pointer-events: none; /* Prevents the image itself from blocking touch/hold inputs on the button */
+        }
         .scanning-overlay {
             position: absolute;
             top: 20px;
@@ -332,24 +338,24 @@
     </div>
 
     <div id="screen-one" class="screen">
-        <div class="scanning-overlay">SYS.STATUS: LOCKED</div>
-        <div id="terminal-log"></div>
-        <div class="biometric-container">
-            <button id="biometric-trigger" class="thumbprint-btn" 
-                    onmousedown="startBiometricScan(event)" 
-                    onmouseup="cancelBiometricScan()" 
-                    onmouseleave="cancelBiometricScan()"
-                    ontouchstart="startBiometricScan(event)" 
-                    ontouchend="cancelBiometricScan()">
-                <div id="scanner-line" class="scan-bar"></div>
-                
-                <img src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/thumbprint%20no%20bg.png" alt="Thumbprint Scanner" class="scanner-graphic">
-                
-            </button>
-            <div id="scan-status" class="status-text">PLACE & HOLD<br>
-                THUMB TO ACCESS</div>
-        </div>
+    <div class="scanning-overlay">SYS.STATUS: LOCKED</div>
+    <div id="terminal-log"></div>
+    <div class="biometric-container">
+        <button id="biometric-trigger" class="thumbprint-btn" 
+                onmousedown="startBiometricScan(event)" 
+                onmouseup="cancelBiometricScan()" 
+                onmouseleave="cancelBiometricScan()"
+                ontouchstart="startBiometricScan(event)" 
+                ontouchend="cancelBiometricScan()">
+            <div id="scanner-line" class="scan-bar"></div>
+            
+            <img src="PASTE_YOUR_GITHUB_THUMBPRINT_IMAGE_URL_HERE" alt="Thumbprint Scanner" class="scanner-graphic">
+            
+        </button>
+        <div id="scan-status" class="status-text">PLACE & HOLD<br>
+            THUMB TO ACCESS</div>
     </div>
+</div>
 
     <div id="screen-two" class="screen">
         <div id="ident-header" class="identity-header">IDENTITY VERIFIED</div>
