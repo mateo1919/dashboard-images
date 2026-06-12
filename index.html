@@ -1,27 +1,393 @@
-<div id="screen-four-briefing" class="briefing-container">
-    <h2 class="briefing-title">🚀 MCCROPOLIS LABS: DECISION MATRIX</h2>
-    <p class="briefing-subtitle">Agent Claire, follow the sequential 3-part steps below to extract your physical padlock codes!</p>
-    
-    <hr class="briefing-divider">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SECURE UPLINK: AGENT C-08</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
 
-    <div class="riddle-card">
-        <h3>🔒 PADLOCK WHEEL DIGIT #1</h3>
-        <p><strong>Step A:</strong> Complete your security scan on Screen 1. Watch Screen 2 carefully as your identity photo is revealed. Count exactly how many times the neon cyan border flashes around your picture right after the curtain drops.</p>
-        <p><strong>Step B:</strong> Solve this riddle: <em>"I have a face but no eyes. I have hands but no fingers. I can tell you secrets, but I never speak. What am I?"</em> (Answer: A CLOCK. Count the letters: C-L-O-C-K = 5 letters).</p>
-        <p><strong>Step C:</strong> Take the total number of letters from Step B (5), and subtract the number of glowing dashboard card panels on Screen 3 (2). Your final answer is your first padlock code digit!</p>
+        body, html {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            background-color: #0d0d0d;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            position: relative;
+            overscroll-behavior: none;
+        }
+
+        /* Screen States */
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .screen.active {
+            display: flex;
+        }
+
+        h1, h2, h3 {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .highlight-pink {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        /* Screen 1: Terminal & Scanner */
+        #terminal-box {
+            width: 90%;
+            max-width: 600px;
+            height: 200px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            padding: 10px;
+            text-align: left;
+            overflow-y: hidden;
+            font-size: 14px;
+            margin-bottom: 30px;
+            color: #00ffff;
+        }
+
+        .gate-btn {
+            background: transparent;
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+            padding: 20px 40px;
+            font-size: 18px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+        }
+
+        .gate-btn:active {
+            background: rgba(255, 0, 255, 0.2);
+            transform: scale(0.95);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
+        }
+
+        /* Screen 2: Photo Reveal */
+        .photo-reveal-container {
+            width: 300px;
+            height: 400px;
+            border: 2px solid #333;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .photo-frame {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .photo-frame.flash {
+            border: 5px solid #00ffff;
+            box-shadow: inset 0 0 20px #00ffff, 0 0 30px #00ffff;
+        }
+
+        .curtain {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            transition: top 2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff00ff;
+            font-weight: bold;
+            border-bottom: 2px solid #ff00ff;
+        }
+
+        /* Screen 3 & 4: Cards and Grid */
+        .dashboard-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 800px;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #ff00ff;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+            padding: 20px;
+            width: 300px;
+        }
+
+        .spinning-logo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px auto;
+            animation: spinY 4s linear infinite;
+            filter: drop-shadow(0 0 10px #ff00ff);
+        }
+
+        @keyframes spinY {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        .briefing-container {
+            width: 90%;
+            max-width: 800px;
+            text-align: left;
+            overflow-y: auto;
+            max-height: 90vh;
+            padding-right: 10px;
+        }
+
+        .briefing-divider {
+            border: none;
+            border-top: 1px dashed #00ffff;
+            margin: 20px 0;
+        }
+
+        .riddle-card {
+            background: rgba(0, 255, 255, 0.05);
+            border-left: 4px solid #00ffff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .red-warning {
+            color: red;
+            font-weight: bold;
+            text-shadow: 0 0 5px red;
+            margin-top: 20px;
+        }
+        
+        .nav-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #fff;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="screen-1" class="screen active">
+        <h1>MCCROPOLIS LABS</h1>
+        <h2 class="highlight-pink">SECURE UPLINK</h2>
+        
+        <div id="terminal-box">
+            <div id="terminal-text"></div>
+        </div>
+
+        <p>AGENT C-08: PLEASE VERIFY IDENTITY TO PROCEED</p>
+        
+        <button class="gate-btn" id="scan-btn" 
+            onmousedown="startScan()" onmouseup="cancelScan()" onmouseleave="cancelScan()"
+            ontouchstart="startScan()" ontouchend="cancelScan()">
+            PLACE & HOLD THUMB TO ACCESS
+        </button>
+        <p style="margin-top:10px; color:#aaa; font-size:12px;">(Hold firmly for 8 seconds)</p>
     </div>
 
-    <div class="riddle-card">
-        <h3>🔒 PADLOCK WHEEL DIGIT #2</h3>
-        <p><strong>Step A:</strong> Return to Screen 1 and hold your thumb on the biometric scanner pad. Count out loud at a steady pace: how many total seconds does the system take to process your scan from 0% to 100%?</p>
-        <p><strong>Step B:</strong> Look closely at the scrolling text logs on Screen 1 showing the security breach caused by Subject J (Jarvis the cat). Find the secret line tracking his kitchen break-ins and read how many treats he successfully swiped! (Answer: 7 treats).</p>
-        <p><strong>Step C:</strong> Subtract your swiped treat count (7) from your total scan seconds in Step A (8) to find your remaining balance security code (1). Add that 1 back to your treat count, and your second padlock wheel digit is securely locked in!</p>
+    <div id="screen-2" class="screen">
+        <h2>BIOMETRIC MATCH CONFIRMED</h2>
+        <p>Welcome to active duty, Agent C-08.</p>
+        
+        <div class="photo-reveal-container">
+            <div id="agent-photo" class="photo-frame" style="background-image: url('YOUR_GITHUB_IMAGE_URL_HERE');"></div>
+            <div id="curtain" class="curtain">DECRYPTING...</div>
+        </div>
+
+        <button class="nav-btn" onclick="goToScreen(3)">PROCEED TO DOSSIER</button>
     </div>
 
-    <div class="riddle-card">
-        <h3>🔒 PADLOCK WHEEL DIGIT #3</h3>
-        <p><strong>Step A:</strong> Access Screen 3 and look closely at your official Agent ID Credentials. Count exactly how many spinning McCropolis Labs logos are rotating on the panels.</p>
-        <p><strong>Step B:</strong> Read the strict red security warning line at the bottom of Screen 3. Fill in the missing classification word: <em>"Unauthorized Access Will Activate ________ Pooper Protocols."</em> (Answer: PARTY).</p>
-        <p><strong>Step C:</strong> Take the number of spinning logos you counted in Step A (1). Multiply it by the number of human Field Partners listed on your screen who built this mission for you (Uncle Matthew = 1). Your final padlock wheel digit clicks into place!</p>
+    <div id="screen-3" class="screen">
+        <h2>AGENT DOSSIER</h2>
+        <div class="dashboard-grid">
+            
+            <div class="card">
+                <h3>PROFILE</h3>
+                <p><strong>CODENAME:</strong> Agent C-08</p>
+                <p><strong>CLEARANCE:</strong> Level 8</p>
+                <p><strong>FIELD PARTNER:</strong> Uncle Matthew (Qty: 1)</p>
+            </div>
+
+            <div class="card">
+                <img src="YOUR_GITHUB_LOGO_URL_HERE" alt="McCropolis Shield" class="spinning-logo">
+                <h3>SYSTEM STATUS</h3>
+                <p id="countdown-timer">T-MINUS: CALIBRATING...</p>
+                <p class="red-warning">Unauthorized Access Will Activate PARTY Pooper Protocols.</p>
+            </div>
+
+        </div>
+        <button class="nav-btn" onclick="goToScreen(4)">VIEW MISSION BRIEFING</button>
+        <button class="nav-btn" onclick="goToScreen(1)" style="margin-left: 10px;">BACK TO SCANNER</button>
     </div>
-</div>
+
+    <div id="screen-4" class="screen">
+        <div id="screen-four-briefing" class="briefing-container">
+            <h2 class="briefing-title">🚀 MCCROPOLIS LABS: DECISION MATRIX</h2>
+            <p class="briefing-subtitle">Agent Claire, follow the sequential 3-part steps below to extract your physical padlock codes!</p>
+            
+            <hr class="briefing-divider">
+
+            <div class="riddle-card">
+                <h3>🔒 PADLOCK WHEEL DIGIT #1</h3>
+                <p><strong>Step A:</strong> Complete your security scan on Screen 1. Watch Screen 2 carefully as your identity photo is revealed. Count exactly how many times the neon cyan border flashes around your picture right after the curtain drops.</p>
+                <p><strong>Step B:</strong> Solve this riddle: <em>"I have a face but no eyes. I have hands but no fingers. I can tell you secrets, but I never speak. What am I?"</em> (Answer: A CLOCK. Count the letters: C-L-O-C-K = 5 letters).</p>
+                <p><strong>Step C:</strong> Take the total number of letters from Step B (5), and subtract the number of glowing dashboard card panels on Screen 3 (2). Your final answer is your first padlock code digit!</p>
+            </div>
+
+            <div class="riddle-card">
+                <h3>🔒 PADLOCK WHEEL DIGIT #2</h3>
+                <p><strong>Step A:</strong> Return to Screen 1 and hold your thumb on the biometric scanner pad. Count out loud at a steady pace: how many total seconds does the system take to process your scan from 0% to 100%?</p>
+                <p><strong>Step B:</strong> Look closely at the scrolling text logs on Screen 1 showing the security breach caused by Subject J (Jarvis the cat). Find the secret line tracking his kitchen break-ins and read how many treats he successfully swiped! (Answer: 7 treats).</p>
+                <p><strong>Step C:</strong> Subtract your swiped treat count (7) from your total scan seconds in Step A (8) to find your remaining balance security code (1). Add that 1 back to your treat count, and your second padlock wheel digit is securely locked in!</p>
+            </div>
+
+            <div class="riddle-card">
+                <h3>🔒 PADLOCK WHEEL DIGIT #3</h3>
+                <p><strong>Step A:</strong> Access Screen 3 and look closely at your official Agent ID Credentials. Count exactly how many spinning McCropolis Labs logos are rotating on the panels.</p>
+                <p><strong>Step B:</strong> Read the strict red security warning line at the bottom of Screen 3. Fill in the missing classification word: <em>"Unauthorized Access Will Activate ________ Pooper Protocols."</em> (Answer: PARTY).</p>
+                <p><strong>Step C:</strong> Take the number of spinning logos you counted in Step A (1). Multiply it by the number of human Field Partners listed on your screen who built this mission for you (Uncle Matthew = 1). Your final padlock wheel digit clicks into place!</p>
+            </div>
+            
+            <button class="nav-btn" onclick="goToScreen(3)" style="margin-top: 30px;">BACK TO DOSSIER</button>
+        </div>
+    </div>
+
+    <script>
+        // TERMINAL LOGIC
+        const terminalLogs = [
+            "SYSTEM BOOT SEQUENCE INITIATED...",
+            "ESTABLISHING SECURE CONNECTION...",
+            "WARNING: UNAUTHORIZED ACCESS DETECTED.",
+            "ANALYZING INTRUDER DATA...",
+            "INTRUDER IDENTIFIED: SUBJECT J (JARVIS).",
+            "SECURITY BREACH: KITCHEN PERIMETER COMPROMISED.",
+            ">>> LOG UPDATE: Subject J successfully swiped exactly 7 treats.",
+            "ENVIRONMENTAL HAZARD DETECTED: ICE CREAM MELTDOWN IMMINENT.",
+            "INITIATING EMERGENCY SEIZURE SUB-ROUTINE...",
+            "AWAITING AGENT C-08 BIOMETRIC OVERRIDE..."
+        ];
+
+        let logIndex = 0;
+        const terminalEl = document.getElementById('terminal-text');
+        
+        function typeLog() {
+            if (logIndex < terminalLogs.length) {
+                terminalEl.innerHTML += "> " + terminalLogs[logIndex] + "<br>";
+                terminalEl.parentElement.scrollTop = terminalEl.parentElement.scrollHeight;
+                logIndex++;
+                setTimeout(typeLog, 800);
+            }
+        }
+        setTimeout(typeLog, 500);
+
+        // SCANNER LOGIC (8 Seconds for Riddle)
+        let scanTimer;
+        let scanProgress = 0;
+
+        function startScan() {
+            const btn = document.getElementById('scan-btn');
+            btn.innerText = "SCANNING... 0%";
+            scanProgress = 0;
+            
+            scanTimer = setInterval(() => {
+                scanProgress += (100 / 8); // Reaches 100% in 8 seconds
+                if (scanProgress >= 100) {
+                    clearInterval(scanTimer);
+                    btn.innerText = "ACCESS GRANTED";
+                    setTimeout(() => { goToScreen(2); triggerPhotoReveal(); }, 500);
+                } else {
+                    btn.innerText = "SCANNING... " + Math.floor(scanProgress) + "%";
+                }
+            }, 1000);
+        }
+
+        function cancelScan() {
+            clearInterval(scanTimer);
+            if (scanProgress < 100) {
+                document.getElementById('scan-btn').innerText = "PLACE & HOLD THUMB TO ACCESS";
+            }
+        }
+
+        // PHOTO REVEAL & FLASH LOGIC (Flashes 3 times for Riddle)
+        function triggerPhotoReveal() {
+            setTimeout(() => {
+                document.getElementById('curtain').style.top = "100%"; // Drops curtain
+                
+                // Flash 3 times
+                let flashCount = 0;
+                let flashInterval = setInterval(() => {
+                    const frame = document.getElementById('agent-photo');
+                    frame.classList.toggle('flash');
+                    flashCount++;
+                    if (flashCount >= 6) { // 3 on, 3 off
+                        clearInterval(flashInterval);
+                    }
+                }, 400);
+
+            }, 1000);
+        }
+
+        // COUNTDOWN TIMER TO JUNE 20, 2026
+        const targetDate = new Date("June 20, 2026 00:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            
+            if (distance < 0) {
+                document.getElementById('countdown-timer').innerText = "MISSION DAY HAS ARRIVED!";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown-timer').innerText = 
+                `T-MINUS: ${days}D ${hours}H ${minutes}M ${seconds}S`;
+        }, 1000);
+
+        // NAVIGATION LOGIC
+        function goToScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + num).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>
