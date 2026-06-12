@@ -285,6 +285,28 @@
             animation: spinY 4s infinite linear;
             filter: drop-shadow(0 0 15px var(--pink));
         }
+        .mission-btn {
+            background: linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(0,255,255,0.3) 100%);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 10px 15px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-align: center;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+            text-shadow: 0 0 4px var(--cyan);
+            transition: all 0.2s ease;
+            margin-top: auto; /* Forces button to stay neatly resting at the bottom of card layout */
+        }
+        .mission-btn:active {
+            background: var(--cyan);
+            color: var(--dark);
+            box-shadow: 0 0 20px var(--cyan);
+        }
         .countdown-footer {
             width: 100%;
             height: 75px;
@@ -300,16 +322,103 @@
             letter-spacing: 2px;
             flex-shrink: 0; /* Protects bottom banner from squishing down */
         }
-        .countdown-segment {
-            display: inline-block;
-            margin: 0 8px;
+        /* Screen 4: Mission Intel Briefing Room (New Asset!) */
+        #screen-four {
+            padding: 25px;
+            height: 100dvh;
+            overflow-y: auto; /* Allows smooth tactical scrolling if screen sizes compress */
+            background: radial-gradient(circle at center, #111 0%, #050505 100%);
         }
-        .countdown-label {
-            font-size: 0.75rem;
-            color: rgba(255, 0, 127, 0.6);
+        .briefing-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid var(--pink);
+            background: rgba(10, 10, 10, 0.95);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.15), inset 0 0 20px rgba(0,0,0,0.8);
+            position: relative;
+        }
+        .briefing-container::before {
+            content: 'TOP SECRET';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--dark);
+            padding: 0 10px;
+            color: var(--pink);
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid var(--pink);
+            letter-spacing: 2px;
+        }
+        .briefing-header {
+            border-bottom: 1px dashed var(--pink);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        .briefing-header strong {
+            color: var(--pink);
+            text-shadow: 0 0 3px var(--pink);
+        }
+        .briefing-title {
+            color: var(--cyan);
+            font-size: 1.6rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px var(--cyan);
+            margin-bottom: 20px;
             text-transform: uppercase;
+        }
+        .briefing-body {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #eee;
+        }
+        .briefing-body p {
+            margin-bottom: 15px;
+        }
+        .objective-box {
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            background: rgba(0, 255, 255, 0.03);
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid var(--cyan);
+        }
+        .objective-box h3 {
+            color: var(--cyan);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
             letter-spacing: 1px;
-            margin-left: 3px;
+        }
+        .lock-spec {
+            margin-top: 15px;
+            padding-left: 10px;
+            border-left: 2px solid var(--pink);
+        }
+        .lock-title {
+            color: var(--pink);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .back-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #888;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+        .back-btn:hover {
+            border-color: var(--pink);
+            color: var(--pink);
+            box-shadow: 0 0 8px rgba(255, 0, 127, 0.2);
         }
         @keyframes blink {
             0% { opacity: 1; }
@@ -330,6 +439,8 @@
             .dashboard-grid { flex-direction: column; }
             #terminal-log { height: 35%; }
             .biometric-container { height: 65%; }
+            #screen-four { padding: 12px; }
+            .briefing-container { padding: 15px; }
         }
     </style>
 </head>
@@ -401,6 +512,8 @@
                 <div style="font-size: 0.8rem; color: #ff0055; border-top: 1px dashed #333; padding-top: 10px; line-height: 1.4;">
                     <strong>WARNING:</strong> Internal Agency Classified Employee Data. Unauthorized Access Will Activate Party Pooper Protocols.
                 </div>
+
+                <button class="mission-btn" onclick="initializeBriefing()">⚠️ ACCESS INTERCEPTED DATA STREAM [CLICK HERE]</button>
             </div>
 
             <div class="dash-card">
@@ -415,6 +528,46 @@
 
         <div class="countdown-footer">
             <span id="countdown-clock">INITIALIZING SECURITY SEQUENCE...</span>
+        </div>
+    </div>
+
+    <div id="screen-four" class="screen">
+        <div class="briefing-container">
+            <div class="briefing-header">
+                <strong>FROM:</strong> McCropolis Labs Mainframe // Core Security Division<br>
+                <strong>TO:</strong> Field Specialist Agent C-08 (Age Milestone: 8.0)<br>
+                <strong>CLASSIFICATION:</strong> Ultra-High Level Security Emergency
+            </div>
+            
+            <div class="briefing-title">📡 INTRUDER ALERT: Project Present Lockdown</div>
+            
+            <div class="briefing-body">
+                <p>Attention <strong>Agent Claire</strong>! We have a major operational emergency at the headquarters. A mysterious, ultra-secure cargo vault has materialized straight from the future right into your operations base!</p>
+                
+                <p>This vault contains 5 top-secret intelligence volumes (specifically camouflaged as awesome storybooks). However, before our field team could deliver them to you, <strong>Subject J (Jarvis the Cat)</strong> snuck into the testing bay while chasing a laser dot. He hopped onto the control console, fell asleep on the big glowing toggle switch, and accidentally activated the <strong>Super Laser Lockdown Protocol!</strong></p>
+                
+                <div class="objective-box">
+                    <h3>🎯 YOUR CRITICAL BIRTHDAY MISSION:</h3>
+                    <p>The heavy containment box is trapped inside a security grid clamped tight by <strong>3 separate lock mechanisms</strong>. To break the lockdown and save your books before the countdown timer hits zero on June 20th, you must decipher exactly <strong>3 sets of tactical riddles</strong> (9 riddles total!). Only your specialized Level 8 puzzle-cracking mind can handle these equations!</p>
+                </div>
+
+                <p>Our intelligence network intercepted the technical layout for the 3 security barriers. Study these parameters carefully:</p>
+                
+                <div class="lock-spec">
+                    <p class="lock-title">🔓 BARRIER 1: The Integrated Vault Corner-Box</p>
+                    <p>This is your first priority check. To initialize the box's primary circuitry and power up the internal gear systems, check the birthday morning transmission from your Field Partners (Agent Uncle Matthew and Agent Jarvis). You must solve their 3 mathematical spy riddles to calculate the 3-digit access vector.</p>
+                    
+                    <p class="lock-title">🔒 BARRIER 2: The Left Tactical Chain Padlock</p>
+                    <p>Once the corner vault pops open, you will extract a special optical lens overlay. You must activate the vault's internal neon lighting grid, then look directly through the red cancellation transparency. The neon light waves will obliterate the scrambled background noise, revealing a secret 3-digit combination right before your eyes!</p>
+                    
+                    <p class="lock-title">🧠 BARRIER 3: The Right Cryptographic Padlock (HIGH DIFFICULTY)</p>
+                    <p>This is the ultimate test. The Agency has hidden the formulas for this lock inside a classified cipher matrix. To solve it, you will need to map your physical <strong>Official ID Badge Number</strong> (printed right on your digital card on the previous screen!) against a series of advanced code-breaking calculations. You have 5 full days to crack this code—do not let Dr. Boring win!</p>
+                </div>
+
+                <p style="margin-top: 25px; color: var(--cyan); font-weight: bold; text-shadow: 0 0 3px var(--cyan);">Good luck, Agent C-08. The Agency is counting on you. This transmission will remain active on your secure node dashboard.</p>
+            </div>
+
+            <button class="back-btn" onclick="exitBriefing()">&lt; RETURN TO MAIN ID BADGE SCREEN</button>
         </div>
     </div>
 
@@ -494,7 +647,7 @@
             if (e && e.cancelable) e.preventDefault();
             if (isAuthorized) return;
             document.getElementById('scanner-line').style.display = 'block';
-            document.getElementById('scan-status').innerText = "PROCESSING...";
+            document.getElementById('scan-status').innerHTML = "PROCESSING...";
             document.getElementById('scan-status').style.color = "var(--cyan)";
             
             let progress = 0;
@@ -517,7 +670,7 @@
             const status = document.getElementById('scan-status');
             if (line) line.style.display = 'none';
             if (status) {
-                status.innerText = "PLACE THUMB TO ACCESS";
+                status.innerHTML = "PLACE THUMB TO ACCESS";
                 status.style.color = "var(--pink)";
             }
         }
@@ -550,6 +703,21 @@
             document.getElementById('screen-two').classList.remove('active');
             document.getElementById('screen-three').classList.add('active');
             startCountdown();
+        }
+
+        function initializeBriefing() {
+            if(audio) {
+                audio.playBeep(440, 0.08, 'sawtooth');
+                setTimeout(() => audio.playBeep(660, 0.15, 'sawtooth'), 60);
+            }
+            document.getElementById('screen-three').classList.remove('active');
+            document.getElementById('screen-four').classList.add('active');
+        }
+
+        function exitBriefing() {
+            if(audio) audio.playBeep(350, 0.1, 'sine');
+            document.getElementById('screen-four').classList.remove('active');
+            document.getElementById('screen-three').classList.add('active');
         }
 
         function startCountdown() {
