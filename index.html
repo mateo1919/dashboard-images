@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent C-08 // McCropolis Labs</title>
+    <title>McCropolis Labs // Agent C-08</title>
     <style>
         :root {
             --pink: #ff007f;
@@ -387,10 +387,15 @@
                         DESIGNATION: Agent C-08<br>
                         CLEARANCE: Level 8 (Advanced)<br>
                         STATUS: Active / On Mission<br>
-                        ASSIGNMENT: Disable Present's Lockdown<br>
+                        ASSIGNMENT: Celebrating<br>
                         SPECIALIZATION: Advanced Reading & Code Breaking
                     </div>
                 </div>
+                
+                <p style="font-size: 1.1rem; color: #ffffff; line-height: 1.5; border-top: 1px solid #222; padding-top: 15px;">
+                    This Security Badge Gives The Now 8 Year Old Agent Claire, AKA Agent C-08, FULL ACCESS to All Level 8 Classified Documents and Projects.
+                </p>
+
                 <div style="font-size: 0.8rem; color: #ff0055; border-top: 1px dashed #333; padding-top: 10px; line-height: 1.4;">
                     <strong>WARNING:</strong> Internal Agency Classified Employee Data. Unauthorized Access Will Activate Party Pooper Protocols.
                 </div>
@@ -568,7 +573,7 @@
                 const mStr = minutes.toString().padStart(2, '0');
                 const sStr = seconds.toString().padStart(2, '0');
 
-                container.innerHTML = `Package Delivery in: ${dStr} Days: ${hStr} Hours: ${mStr} Minutes: ${sStr} Seconds`;
+                container.innerHTML = `T-MINUS ${dStr}Days: ${hStr}Hours: ${mStr}Minutes: ${sStr}Seconds`;
             }
 
             updateClock();
