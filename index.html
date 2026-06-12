@@ -322,7 +322,7 @@
             letter-spacing: 2px;
             flex-shrink: 0; /* Protects bottom banner from squishing down */
         }
-        /* Screen 4: Mission Intel Briefing Room (New Asset!) */
+        /* Screen 4: Kid-Friendly Mission Briefing Room */
         #screen-four {
             padding: 25px;
             height: 100dvh;
@@ -356,7 +356,7 @@
             border-bottom: 1px dashed var(--pink);
             padding-bottom: 15px;
             margin-bottom: 20px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #aaa;
             line-height: 1.6;
         }
@@ -366,7 +366,7 @@
         }
         .briefing-title {
             color: var(--cyan);
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: bold;
             letter-spacing: 2px;
             text-shadow: 0 0 8px var(--cyan);
@@ -374,7 +374,7 @@
             text-transform: uppercase;
         }
         .briefing-body {
-            font-size: 1rem;
+            font-size: 1.05rem;
             line-height: 1.6;
             color: #eee;
         }
@@ -390,7 +390,7 @@
         }
         .objective-box h3 {
             color: var(--cyan);
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             margin-bottom: 10px;
             letter-spacing: 1px;
         }
@@ -402,7 +402,15 @@
         .lock-title {
             color: var(--pink);
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+        .sub-steps {
+            padding-left: 15px;
+            margin-top: 5px;
+            font-size: 0.95rem;
+            color: #ccc;
+            line-height: 1.5;
         }
         .back-btn {
             background: transparent;
@@ -513,7 +521,7 @@
                     <strong>WARNING:</strong> Internal Agency Classified Employee Data. Unauthorized Access Will Activate Party Pooper Protocols.
                 </div>
 
-                <button class="mission-btn" onclick="initializeBriefing()">⚠️ ACCESS INTERCEPTED DATA STREAM [CLICK HERE]</button>
+                <button class="mission-btn" onclick="initializeBriefing()">⚠️ ACCESS CLASSIFIED INTEL STREAM [CLICK HERE]</button>
             </div>
 
             <div class="dash-card">
@@ -534,37 +542,63 @@
     <div id="screen-four" class="screen">
         <div class="briefing-container">
             <div class="briefing-header">
-                <strong>FROM:</strong> McCropolis Labs Mainframe // Core Security Division<br>
-                <strong>TO:</strong> Field Specialist Agent C-08 (Age Milestone: 8.0)<br>
-                <strong>CLASSIFICATION:</strong> Ultra-High Level Security Emergency
+                <strong>FROM:</strong> McCropolis Labs Security Division<br>
+                <strong>TO:</strong> Agent Claire (Agent C-08)<br>
+                <strong>MISSION LEVEL:</strong> Super Hard (Level 8)
             </div>
             
-            <div class="briefing-title">📡 INTRUDER ALERT: Project Present Lockdown</div>
+            <div class="briefing-title">📡 INTRUDER ALERT: THE LOCKDOWN IS ACTIVE!</div>
             
             <div class="briefing-body">
-                <p>Attention <strong>Agent Claire</strong>! We have a major operational emergency at the headquarters. A mysterious, ultra-secure cargo vault has materialized straight from the future right into your operations base!</p>
+                <p>Attention <strong>Agent Claire</strong>! We have a giant spy emergency! A top-secret mystery vault has dropped right into your headquarters. It contains your special birthday surprises, but we have a big problem.</p>
                 
-                <p>This vault contains 5 top-secret intelligence volumes (specifically camouflaged as awesome storybooks). However, before our field team could deliver them to you, <strong>Subject J (Jarvis the Cat)</strong> snuck into the testing bay while chasing a laser dot. He hopped onto the control console, fell asleep on the big glowing toggle switch, and accidentally activated the <strong>Super Laser Lockdown Protocol!</strong></p>
+                <p>Our Chief of Security, <strong>Jarvis the Cat</strong>, was chasing a red laser pointer dot across the control room. He zoomed onto the main console, accidentally fell asleep right on top of the giant security button, and tripped the <strong>Total Vault Lockdown Grid!</strong></p>
                 
                 <div class="objective-box">
-                    <h3>🎯 YOUR CRITICAL BIRTHDAY MISSION:</h3>
-                    <p>The heavy containment box is trapped inside a security grid clamped tight by <strong>3 separate lock mechanisms</strong>. To break the lockdown and save your books before the countdown timer hits zero on June 20th, you must decipher exactly <strong>3 sets of tactical riddles</strong> (9 riddles total!). Only your specialized Level 8 puzzle-cracking mind can handle these equations!</p>
+                    <h3>🎯 YOUR TOP SECRET MISSION:</h3>
+                    <p>The vault is locked tight by <strong>3 separate locks</strong>. To break the lockdown and get your surprises before the clock hits zero on June 20th, you must solve 3 sets of tricky puzzles. You have 5 whole days to figure this out. Let's show Jarvis how code-breaking is done!</p>
                 </div>
 
-                <p>Our intelligence network intercepted the technical layout for the 3 security barriers. Study these parameters carefully:</p>
+                <p>Our spy network intercepted the secrets to unlocking all 3 security steps. Grab your notebook, look at the clues, and start calculating:</p>
                 
                 <div class="lock-spec">
-                    <p class="lock-title">🔓 BARRIER 1: The Integrated Vault Corner-Box</p>
-                    <p>This is your first priority check. To initialize the box's primary circuitry and power up the internal gear systems, check the birthday morning transmission from your Field Partners (Agent Uncle Matthew and Agent Jarvis). You must solve their 3 mathematical spy riddles to calculate the 3-digit access vector.</p>
+                    <p class="lock-title">🔑 LOCK #1: The Corner Vault Box</p>
+                    <p>This is your first check! Check your birthday morning message from Agent Uncle Matthew and Agent Jarvis. They sent you 3 math spy riddles. Solve them to find the first 3-digit code and pop the corner hatch!</p>
                     
-                    <p class="lock-title">🔒 BARRIER 2: The Left Tactical Chain Padlock</p>
-                    <p>Once the corner vault pops open, you will extract a special optical lens overlay. You must activate the vault's internal neon lighting grid, then look directly through the red cancellation transparency. The neon light waves will obliterate the scrambled background noise, revealing a secret 3-digit combination right before your eyes!</p>
+                    <p class="lock-title">🔑 LOCK #2: The Front Chain Padlock</p>
+                    <p>Once the corner box opens up, look inside! You will find a secret red lens sheet. Turn on the vault's glowing neon lights, and hold the red sheet right over the top. The red color will make the messy background vanish, revealing the next 3-digit code right before your eyes!</p>
                     
-                    <p class="lock-title">🧠 BARRIER 3: The Right Cryptographic Padlock (HIGH DIFFICULTY)</p>
-                    <p>This is the ultimate test. The Agency has hidden the formulas for this lock inside a classified cipher matrix. To solve it, you will need to map your physical <strong>Official ID Badge Number</strong> (printed right on your digital card on the previous screen!) against a series of advanced code-breaking calculations. You have 5 full days to crack this code—do not let Dr. Boring win!</p>
+                    <p class="lock-title">🧠 LOCK #3: The Back Chain Padlock (SUPER HARD CLEARANCE!)</p>
+                    <p>This is the ultimate test. The code for the back lock is hidden inside a math matrix. To break it, click the button at the bottom of this page to look at your <strong>Official ID Badge Number</strong> on the previous screen, and run these 3 code-cracking calculations:</p>
+                    
+                    <p class="lock-title">🔴 WHEEL DIGIT #1: The Letter Intercept</p>
+                    <div class="sub-steps">
+                        1. Find the four letters in the middle of your ID string: <strong>B - T - T - F</strong>.<br>
+                        2. Write down their alphabet numbers (Example: A=1, B=2, C=3, D=4...).<br>
+                        3. Add those 4 numbers together to get your secret letter score.<br>
+                        4. Divide your score by your <strong>Clearance Level</strong> number.<br>
+                        5. This single-digit answer is the first number for the back padlock!
+                    </div>
+                    
+                    <p class="lock-title">🔵 WHEEL DIGIT #2: The Time Machine Code</p>
+                    <div class="sub-steps">
+                        1. Find the 4-digit year hidden right inside your ID string.<br>
+                        2. Add all 4 numbers of that year together.<br>
+                        3. Subtract the very first number printed at the absolute start of your ID string.<br>
+                        4. This single-digit total gives you the middle number for the back padlock!
+                    </div>
+                    
+                    <p class="lock-title">🟢 WHEEL DIGIT #3: The Card Count Override</p>
+                    <div class="sub-steps">
+                        1. Look at your full ID string and count how many total letters there are (skip dashes and numbers).<br>
+                        2. Multiply that count by the single number sitting perfectly between your first and third dash lines.<br>
+                        3. Subtract the total number of days you were given to solve this secret mission.<br>
+                        4. Subtract your 2-digit Agent Designation number found at the very end of your ID string.<br>
+                        5. You will get a 2-digit number. Add those two numbers together (Example: if you get 15, do 1+5) to get a single digit. That is your final number!
+                    </div>
                 </div>
 
-                <p style="margin-top: 25px; color: var(--cyan); font-weight: bold; text-shadow: 0 0 3px var(--cyan);">Good luck, Agent C-08. The Agency is counting on you. This transmission will remain active on your secure node dashboard.</p>
+                <p style="margin-top: 25px; color: var(--cyan); font-weight: bold; text-shadow: 0 0 3px var(--cyan);">Take your time, Agent C-08. We know you can crack this code. McCropolis Labs is out!</p>
             </div>
 
             <button class="back-btn" onclick="exitBriefing()">&lt; RETURN TO MAIN ID BADGE SCREEN</button>
