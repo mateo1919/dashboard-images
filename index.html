@@ -16,18 +16,18 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
-            -webkit-touch-callout: none; /* Obliterates Safari's magnifying lens text popup */
+            -webkit-touch-callout: none; /* Disables text-magnifier lens popup on iOS */
         }
         body, html {
             width: 100%;
             height: 100vh;
-            height: 100dvh; /* Force modern Safari to track exact viewport dimensions */
+            height: 100dvh; /* Forces modern viewport tracking constraints */
             background-color: var(--dark);
             color: #ffffff;
             font-family: 'Courier New', Courier, monospace;
             overflow: hidden;
             position: relative;
-            overscroll-behavior: none; /* Disables Safari elastic rubber-banding drag */
+            overscroll-behavior: none; /* Stops elastic mobile rubber-banding pull */
         }
         /* Screen States */
         .screen {
@@ -81,8 +81,8 @@
         .scanner-graphic {
             width: 100%;
             height: 100%;
-            object-fit: contain;  /* Keeps the image aspect ratio perfect without warping */
-            pointer-events: none; /* Prevents the image itself from blocking touch/hold inputs on the button */
+            object-fit: contain;
+            pointer-events: none;
         }
         .scanning-overlay {
             position: absolute;
@@ -114,12 +114,7 @@
             align-items: center;
             position: relative;
             outline: none;
-            touch-action: none; /* Stops webview from moving under finger pressure */
-        }
-        .thumbprint-btn svg {
-            width: 75px;
-            fill: var(--pink);
-            filter: drop-shadow(0 0 5px var(--pink));
+            touch-action: none;
         }
         .scan-bar {
             position: absolute;
@@ -137,6 +132,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             height: 24px;
+            text-align: center;
         }
         /* Screen 2: Dynamic Scan Split */
         #screen-two {
@@ -194,6 +190,20 @@
             box-shadow: 0 0 12px var(--cyan);
             animation: scanUpDown 2.5s infinite ease-in-out;
             z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .laser-code-node {
+            color: var(--cyan);
+            font-weight: bold;
+            font-size: 1.4rem;
+            background: #000;
+            padding: 2px 6px;
+            border: 1px solid var(--cyan);
+            border-radius: 4px;
+            box-shadow: 0 0 8px var(--cyan);
+            transform: translateY(-50%);
         }
         .reveal-box {
             position: relative;
@@ -217,7 +227,7 @@
             transition: transform linear;
             transform-origin: bottom;
         }
-        /* Screen 3: Tactical Dashboard Layout Optimized */
+        /* Screen 3: Tactical Dashboard */
         #screen-three {
             padding: 20px;
             height: 100dvh;
@@ -228,7 +238,7 @@
             flex: 1;
             gap: 15px;
             width: 100%;
-            min-height: 0; /* Keeps layout items from forcing out of viewport margins */
+            min-height: 0;
         }
         .dash-card {
             flex: 1;
@@ -300,7 +310,7 @@
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
             text-shadow: 0 0 4px var(--cyan);
             transition: all 0.2s ease;
-            margin-top: auto; /* Forces button to stay neatly resting at the bottom of card layout */
+            margin-top: auto;
         }
         .mission-btn:active {
             background: var(--cyan);
@@ -320,13 +330,13 @@
             font-weight: bold;
             text-shadow: 0 0 8px var(--pink);
             letter-spacing: 2px;
-            flex-shrink: 0; /* Protects bottom banner from squishing down */
+            flex-shrink: 0;
         }
-        /* Screen 4: Kid-Friendly Mission Briefing Room */
+        /* Screen 4: 3-Step Decryption Mission View */
         #screen-four {
             padding: 25px;
             height: 100dvh;
-            overflow-y: auto; /* Allows smooth tactical scrolling if screen sizes compress */
+            overflow-y: auto;
             background: radial-gradient(circle at center, #111 0%, #050505 100%);
         }
         .briefing-container {
@@ -405,12 +415,25 @@
             margin-top: 15px;
             font-size: 1.1rem;
         }
+        .puzzle-sequence-box {
+            background: rgba(255, 0, 127, 0.02);
+            border: 1px solid rgba(255, 0, 127, 0.1);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
         .sub-steps {
             padding-left: 15px;
             margin-top: 5px;
             font-size: 0.95rem;
             color: #ccc;
-            line-height: 1.5;
+            line-height: 1.6;
+        }
+        .step-label {
+            color: var(--cyan);
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 5px;
         }
         .back-btn {
             background: transparent;
@@ -441,7 +464,6 @@
             from { transform: rotateY(0deg); }
             to { transform: rotateY(360deg); }
         }
-        /* Fallback adjustments if viewport flips vertical */
         @media (max-width: 768px) {
             .split-container { flex-direction: column; }
             .dashboard-grid { flex-direction: column; }
@@ -464,17 +486,14 @@
         <div class="biometric-container">
             <button id="biometric-trigger" class="thumbprint-btn" 
                     onmousedown="startBiometricScan(event)" 
-                    onmouseup="cancelBiometricScan()" 
+                    onmouseup="cancelBiometricScan())" 
                     onmouseleave="cancelBiometricScan()"
                     ontouchstart="startBiometricScan(event)" 
                     ontouchend="cancelBiometricScan()">
                 <div id="scanner-line" class="scan-bar"></div>
-                
-                <img src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/thumbprint%20no%20bg.png" alt="Thumbprint Scanner" class="scanner-graphic">
-                
+                <img src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/thumbprint%20no%20bg.png" alt="Biometric Thumbprint Input" class="scanner-graphic">
             </button>
-            <div id="scan-status" class="status-text">PLACE & HOLD<br>
-                THUMB TO ACCESS</div>
+            <div id="scan-status" class="scan-status">PLACE & HOLD<br>THUMB TO ACCESS</div>
         </div>
     </div>
 
@@ -483,14 +502,16 @@
         <div class="split-container">
             <div class="left-panel">
                 <div class="body-scan-container">
-                    <div class="laser-line"></div>
-                    <img class="body-wireframe" src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/face%20blue.jpg" alt="Body Scan Matrix">
+                    <div class="laser-line">
+                        <div class="laser-code-node">SYS_ERR: 3</div>
+                    </div>
+                    <img class="body-wireframe" src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/face%20blue.jpg" alt="Biometric Vector Grid">
                 </div>
             </div>
             <div class="right-panel">
                 <div class="reveal-box">
                     <div id="image-curtain" class="reveal-curtain"></div>
-                    <img src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/Claire%20School.jpg" alt="Agent Profile Verification">
+                    <img src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/Claire%20School.jpg" alt="Operations Profile Match">
                 </div>
             </div>
         </div>
@@ -500,25 +521,26 @@
         <div class="dashboard-grid">
             <div class="dash-card">
                 <div class="profile-section">
-                    <img class="profile-pic" src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/Claire_Badge-removebg.png" alt="Agent 08 Pic">
+                    <img class="profile-pic" src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/Claire_Badge-removebg.png" alt="Agent Credential Avatar">
                     <div class="credentials">
                         <strong>ACCESSING FILE ON AGENT CLAIRE</strong><br>
                         DESIGNATION: Agent C-08<br>
                         CLEARANCE: Level 8 (Advanced)<br>
                         STATUS: Active / On Mission<br>
-                        ASSIGNMENT: Decrypt 9 Riddles to Open the Locks & Retrieve Your Presents<br>
-                        SPECIALIZATION: Advanced Reading & Code Breaking
+                        ASSIGNMENT: Override 3 Physical Padlock Security Channels<br>
+                        SPECIALIZATION: Advanced Decryption Matrix Operations
                     </div>
                 </div>
                 
                 <p style="font-size: 0.8rem; color: #ffffff; line-height: 1.5; border-top: 1px solid #222; padding-top: 15px;">
                     **This security badge gives 8 Year Old Agent Claire FULL ACCESS to all Level 8 classified documents and projects.**<br>
                     This is your Agent ID #11-5-1955-BTTF-C-08<br>
+                    Field Partners: Agent Uncle Matthew, Agent Jarvis (The Cat)<br>
                     ||| | || |||| | ||| ||| || | || |||| | ||| || |
                 </p>
 
-                <div style="font-size: 0.8rem; color: #ff0055; border-top: 1px dashed #333; padding-top: 10px; line-height: 1.4;">
-                    <strong>WARNING:</strong> Internal Agency Classified Employee Data. Unauthorized Access Will Activate Party Pooper Protocols.
+                <div id="target-warning-line" style="font-size: 0.8rem; color: #ff0055; border-top: 1px dashed #333; padding-top: 10px; line-height: 1.4;">
+                    <strong>WARNING:</strong> Internal McCropolis Labs Classified Employee Data. Unauthorized Access Will Activate Party Pooper Protocols.
                 </div>
 
                 <button class="mission-btn" onclick="initializeBriefing()">⚠️ ACCESS CLASSIFIED INTEL STREAM [CLICK HERE]</button>
@@ -529,7 +551,7 @@
                     OFFICIAL ID BADGE
                 </div>
                 <div class="emblem-wrapper">
-                    <img class="spinning-emblem" src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/McCropolisLogoAdobe.png" alt="Agency Shield Layout">
+                    <img class="spinning-emblem" src="https://raw.githubusercontent.com/mateo1919/dashboard-images/refs/heads/main/McCropolisLogoAdobe.png" alt="McCropolis Labs Hologram">
                 </div>
             </div>
         </div>
@@ -542,63 +564,64 @@
     <div id="screen-four" class="screen">
         <div class="briefing-container">
             <div class="briefing-header">
-                <strong>FROM:</strong> McCropolis Labs Security Division<br>
+                <strong>FROM:</strong> McCropolis Labs Security Mainframe<br>
                 <strong>TO:</strong> Agent Claire (Agent C-08)<br>
-                <strong>MISSION LEVEL:</strong> Super Hard (Level 8)
+                <strong>CLEARANCE TESTING LEVEL:</strong> 10 Year Old Grade Override
             </div>
             
-            <div class="briefing-title">📡 INTRUDER ALERT: THE LOCKDOWN IS ACTIVE!</div>
+            <div class="briefing-title">📡 SECURITY INTRUSION PROTOCOL: BACK PADLOCK CHAINS</div>
             
             <div class="briefing-body">
-                <p>Attention <strong>Agent Claire</strong>! We have a giant spy emergency! A top-secret mystery vault has dropped right into your headquarters. It contains your special birthday surprises, but we have a big problem.</p>
+                <p>Attention <strong>Agent Claire</strong>! We have a giant spy emergency! A mystery vault box has dropped right into your headquarters. It contains your special birthday surprises, but it is locked up tight.</p>
                 
-                <p>Our Chief of Security, <strong>Jarvis the Cat</strong>, was chasing a red laser pointer dot across the control room. He zoomed onto the main console, accidentally fell asleep right on top of the giant security button, and tripped the <strong>Total Vault Lockdown Grid!</strong></p>
+                <p>Our Chief of Security, <strong>Jarvis the Cat</strong>, fell asleep right on top of the main console, scrambled the circuits, and tripped the <strong>Total Vault Lockdown Grid!</strong></p>
                 
                 <div class="objective-box">
-                    <h3>🎯 YOUR TOP SECRET MISSION:</h3>
-                    <p>The vault is locked tight by <strong>3 separate locks</strong>. To break the lockdown and get your surprises before the clock hits zero on June 20th, you must solve 3 sets of tricky puzzles. You have 5 whole days to figure this out. Let's show Jarvis how code-breaking is done!</p>
+                    <h3>🎯 CLASSIFIED SECURE DECRYPTION METHOD:</h3>
+                    <p>The vault is clamped down by <strong>3 separate locks</strong>. To crack the code wheels on the back chain padlock, you must complete three sequential 3-step field operations below. Take your time, focus your thoughts, and track down each digit!</p>
                 </div>
 
-                <p>Our spy network intercepted the secrets to unlocking all 3 security steps. Grab your notebook, look at the clues, and start calculating:</p>
-                
                 <div class="lock-spec">
                     <p class="lock-title">🔑 LOCK #1: The Corner Vault Box</p>
-                    <p>This is your first check! Check your birthday morning message from Agent Uncle Matthew and Agent Jarvis. They sent you 3 math spy riddles. Solve them to find the first 3-digit code and pop the corner hatch!</p>
+                    <p>Check your birthday morning transmission from Agent Uncle Matthew and Agent Jarvis. They sent you 3 math spy riddles. Solve them to find your first 3-digit access vector and open the corner hatch!</p>
                     
                     <p class="lock-title">🔑 LOCK #2: The Front Chain Padlock</p>
-                    <p>Once the corner box opens up, look inside! You will find a secret red lens sheet. Turn on the vault's glowing neon lights, and hold the red sheet right over the top. The red color will make the messy background vanish, revealing the next 3-digit code right before your eyes!</p>
+                    <p>Once the corner box pops open, retrieve your red lens transparency sheet. Turn on the vault's neon lights, then look through the sheet to instantly make the background clutter vanish and view the next combination!</p>
                     
-                    <p class="lock-title">🧠 LOCK #3: The Back Chain Padlock (SUPER HARD CLEARANCE!)</p>
-                    <p>This is the ultimate test. The code for the back lock is hidden inside a math matrix. To break it, click the button at the bottom of this page to look at your <strong>Official ID Badge Number</strong> on the previous screen, and run these 3 code-cracking calculations:</p>
+                    <p class="lock-title">🧠 LOCK #3: The Back Chain Padlock (THE THREE 3-STEP SEQUENCES)</p>
+                    <p>To drop the final chain lock, use the return button at the bottom of the page to navigate through your terminal panels and solve these three sequential tests for a combination of **3 - 8 - 1**:</p>
                     
-                    <p class="lock-title">🔴 WHEEL DIGIT #1: The Letter Intercept</p>
-                    <div class="sub-steps">
-                        1. Find the four letters in the middle of your ID string: <strong>B - T - T - F</strong>.<br>
-                        2. Write down their alphabet numbers (Example: A=1, B=2, C=3, D=4...).<br>
-                        3. Add those 4 numbers together to get your secret letter score.<br>
-                        4. Divide your score by your <strong>Clearance Level</strong> number.<br>
-                        5. This single-digit answer is the first number for the back padlock!
+                    <div class="puzzle-sequence-box">
+                        <p class="lock-title" style="margin-top:0; color: var(--cyan);">🔴 WHEEL DIGIT #1: The Laser Matrix Sequence</p>
+                        <div class="sub-steps">
+                            <span class="step-label">Step A [Interactive]:</span> Go to Screen 2 where the mainframe ran a full-body laser wireframe grid check to verify your profile photo. Look closely at the moving cyan horizontal laser bar on the left panel to discover the hidden digital error code drifting with it. Note that number down.<br>
+                            <span class="step-label">Step B [Deduction Riddle]:</span> Now solve this encryption riddle: <em>"I have a space but no air, I have rooms but no beds, and I have keys but no locks. What am I?"</em><br>
+                            <span class="step-label">Step C [Calculation]:</span> Look at your answer for Step B. Find that exact item attached to your workstation mainframe. If your isolated Step A error code matches the total number of lowercase letter "o"s written inside the riddle in Step B, then your Step A value is confirmed as the correct first digit for your padlock!
+                        </div>
                     </div>
                     
-                    <p class="lock-title">🔵 WHEEL DIGIT #2: The Time Machine Code</p>
-                    <div class="sub-steps">
-                        1. Find the 4-digit year hidden right inside your ID string.<br>
-                        2. Add all 4 numbers of that year together.<br>
-                        3. Subtract the very first number printed at the absolute start of your ID string.<br>
-                        4. This single-digit total gives you the middle number for the back padlock!
+                    <div class="puzzle-sequence-box">
+                        <p class="lock-title" style="margin-top:0; color: var(--pink);">🔵 WHEEL DIGIT #2: The Biometric Counter-Measure</p>
+                        <div class="sub-steps">
+                            <span class="step-label">Step A [Interactive]:</span> Return to the biometric entry terminal on Screen 1. Place your finger down on the glowing pink thumbprint scan module and hold it. Use a watch or count steady in your head to find exactly how many total seconds the system takes to load from 0% to 100%. Note that number down.<br>
+                            <span class="step-label">Step B [The Shift-Cipher Decryption]:</span> Break this alphanumeric interception sequence to bypass the secondary firewall corridor:<br>
+                            Our team intercepted an encrypted McCropolis security message: **"E - K - G - H - T - Z - B - Y"**.<br>
+                            To break the shield encryption grid, move the **1st**, **3rd**, **5th**, and **7th** letters of that string exactly **ONE slot forward** in the alphabet (leave the other letters alone!). What is the hidden 8-letter security word?<br>
+                            <span class="step-label">Step C [Code Calibration]:</span> Count the total number of letters hiding in your decrypted keyword from Step B. If that length metric perfectly matches the exact number of seconds you timed on the Screen 1 thumbprint terminal, your verification is clear. This number is your middle padlock digit!
+                        </div>
                     </div>
                     
-                    <p class="lock-title">🟢 WHEEL DIGIT #3: The Card Count Override</p>
-                    <div class="sub-steps">
-                        1. Look at your full ID string and count how many total letters there are (skip dashes and numbers).<br>
-                        2. Multiply that count by the single number sitting perfectly between your first and third dash lines.<br>
-                        3. Subtract the total number of days you were given to solve this secret mission.<br>
-                        4. Subtract your 2-digit Agent Designation number found at the very end of your ID string.<br>
-                        5. You will get a 2-digit number. Add those two numbers together (Example: if you get 15, do 1+5) to get a single digit. That is your final number!
+                    <div class="puzzle-sequence-box">
+                        <p class="lock-title" style="margin-top:0; color: var(--cyan);">🟢 WHEEL DIGIT #3: The Core Isolation Matrix</p>
+                        <div class="sub-steps">
+                            <span class="step-label">Step A [Interactive]:</span> Go to Screen 3 and examine your main tactical profile cards. Look at the absolute bottom of the screen panel and count exactly how many live, active countdown delivery tracking clocks are currently ticking away. Note that number down.<br>
+                            <span class="step-label">Step B [Dossier Inspection]:</span> Read the regular text lines printed on your main left ID badge card on Screen 3. Look under your ID number string and count exactly how many official human or animal **"Field Partners"** are listed working with you on this project.<br>
+                            <span class="step-label">Step C [Clearance Grid Override]:</span> Take your Step A clock count value and add your total Field Partners count from Step B to it. To finish the calculation, subtract the total number of rotating holographic agency logos spinning on Screen 3. Your math answer is the final number needed to drop the chains!
+                        </div>
                     </div>
                 </div>
 
-                <p style="margin-top: 25px; color: var(--cyan); font-weight: bold; text-shadow: 0 0 3px var(--cyan);">Take your time, Agent C-08. We know you can crack this code. McCropolis Labs is out!</p>
+                <p style="margin-top: 25px; color: var(--cyan); font-weight: bold; text-shadow: 0 0 3px var(--cyan);">Good luck hunting, Agent C-08. We know you can crack this mainframe system. McCropolis Labs is out!</p>
             </div>
 
             <button class="back-btn" onclick="exitBriefing()">&lt; RETURN TO MAIN ID BADGE SCREEN</button>
@@ -650,16 +673,16 @@
         }
 
         const logs = [
-            "SCANNING INTERNET FOR TRAINEE CLAIRE... [FOUND]",
-            "ESTABLISHING TOP SECRET BIRTHDAY UPLINK...",
-            "WARNING: CAKE DETECTORS BLOWING UP THE RADAR!",
-            "DECRYPTING ULTIMATE PARTY PROTOCOLS...",
-            "DEFEATING EVIL DR. BORING'S SNEAKY FIREWALLS... [BOOM! OK]",
-            "ALERT: CANDLE COUNT IS RISING RAPIDLY!",
-            "DOWNLOADING INTEL PACKET: 'HOW TO BE AN ELITE 8-YEAR-OLD'...",
-            "LOCALIZING THE DREADED ICE CREAM SEIZURE SUB-ROUTINE...",
-            "CONFIRMING TRAINEE CLAIRE'S NEW DESIGNATION: AGENT C-08...",
-            "CRITICAL PROTOCOL REQUEST: BIOMETRIC IDENTITY CONFIRMATION REQUIRED."
+            "SCANNING NETWORK FOR AGENT CLAIRE... [FOUND]",
+            "ESTABLISHING McCROPOLIS LABS SECURE MATRIX UPLINK...",
+            "WARNING: BIRTHDAY CAKE RADIATION SPIKES DETECTED!",
+            "DECRYPTING ULTIMATE PARTY DEPLOYMENT PROTOCOLS...",
+            "BYPASSING DR. BORING'S SNEAKY FIREWALL INTERCEPTS... [BOOM! OK]",
+            "ALERT: TRACKING CANDLE LIGHT EMISSIONS IN REAL TIME!",
+            "DOWNLOADING INTEL DATA NODE: 'OPERATIONAL METHODOLOGY FOR AGE 9'...",
+            "LOCALIZING THE DREADED ICE CREAM SEIZURE SUB-ROUTINE GRID...",
+            "SYNCHRONIZING RE-ASSIGNMENT RECORDS: DESIGNATION AGENT C-08...",
+            "CRITICAL PROTOCOL: HOLD CONSOLE MODULE FOR BIOMETRIC SCAN VERIFICATION."
         ];
 
         function runTerminalLogs() {
@@ -681,20 +704,22 @@
             if (e && e.cancelable) e.preventDefault();
             if (isAuthorized) return;
             document.getElementById('scanner-line').style.display = 'block';
-            document.getElementById('scan-status').innerHTML = "PROCESSING...";
+            document.getElementById('scan-status').innerHTML = "PROCESSING LOGS...";
             document.getElementById('scan-status').style.color = "var(--cyan)";
             
             let progress = 0;
             clearInterval(scanTimer);
+            // Configured to an exact 8-second execution to perfectly sync with Wheel Clue #2 parameters
             scanTimer = setInterval(() => {
-                progress += 10;
+                progress += 1.25;
                 audio.playBeep(200 + progress * 5, 0.05, 'sine');
+                document.getElementById('scan-status').innerHTML = `SCANNING: ${Math.floor(progress)}%`;
                 if (progress >= 100) {
                     clearInterval(scanTimer);
                     isAuthorized = true;
                     transitionToPageTwo();
                 }
-            }, 250);
+            }, 100);
         }
 
         function cancelBiometricScan() {
@@ -704,7 +729,7 @@
             const status = document.getElementById('scan-status');
             if (line) line.style.display = 'none';
             if (status) {
-                status.innerHTML = "PLACE THUMB TO ACCESS";
+                status.innerHTML = "PLACE & HOLD<br>THUMB TO ACCESS";
                 status.style.color = "var(--pink)";
             }
         }
@@ -728,7 +753,7 @@
                     document.getElementById('ident-header').style.visibility = 'visible';
                     audio.playBeep(880, 0.3, 'square');
                     setTimeout(() => audio.playBeep(1100, 0.5, 'square'), 150);
-                    setTimeout(transitionToDashboard, 3000);
+                    setTimeout(transitionToDashboard, 3500);
                 }
             }, 35);
         }
@@ -777,7 +802,7 @@
                 const mStr = minutes.toString().padStart(2, '0');
                 const sStr = seconds.toString().padStart(2, '0');
 
-                container.innerHTML = `Present Delivery - ${dStr} Days: ${hStr} Hours: ${mStr} Minutes: ${sStr} Seconds`;
+                container.innerHTML = `Vault Security Sync - ${dStr}d : ${hStr}h : ${mStr}m : ${sStr}s`;
             }
 
             updateClock();
