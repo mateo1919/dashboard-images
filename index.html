@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>IMF SECURE NODE: C-08</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Agency // Secure Terminal Node</title>
     <style>
         :root {
+            --dark: #0a0a12;
+            --cyan: #00f2fe;
+            --blue-accent: #4facfe;
             --pink: #ff007f;
-            --cyan: #00ffff;
-            --dark: #050505;
+            --text-gray: #a2a2ba;
         }
 
         * {
@@ -17,596 +19,432 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
-            -webkit-touch-callout: none; /* Obliterates Safari's magnifying lens text popup */
+            -webkit-touch-callout: none;
         }
 
         body, html {
             width: 100%;
             height: 100vh;
-            height: 100dvh; /* Force modern Safari to track exact viewport dimensions */
+            height: 100dvh;
             background-color: var(--dark);
             color: #ffffff;
             font-family: 'Courier New', Courier, monospace;
             overflow: hidden;
             position: relative;
-            overscroll-behavior: none; /* Disables Safari elastic rubber-banding drag */
+            overscroll-behavior: none;
         }
 
-        /* Screen States */
+        /* Scan Line Overlay Effect */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
         .screen {
-            display: none;
-            width: 100%;
-            height: 100dvh;
             position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Screen 0: Initializer Gate */
-        #screen-gate {
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle, #111 0%, #000 100%);
-        }
-
-        .gate-btn {
-            background: transparent;
-            border: 2px solid var(--pink);
-            color: var(--pink);
-            padding: 20px 40px;
-            font-size: 1.5rem;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 0 15px var(--pink);
-            text-shadow: 0 0 5px var(--pink);
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-        }
-
-        /* Screen 1: Terminal & Biometric */
-        #screen-one {
-            padding: 20px;
-            position: relative;
-            height: 100dvh;
-        }
-
-        #terminal-log {
-            width: 100%;
-            height: 45%;
-            overflow: hidden;
-            color: var(--pink);
-            font-size: 14px;
-            line-height: 1.4;
-            text-shadow: 0 0 2px var(--pink);
-            white-space: pre-wrap;
-        }
-
-        .scanning-overlay {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: var(--pink);
-            font-weight: bold;
-            font-size: 1.2rem;
-            animation: blink 0.8s infinite alternate;
-            text-shadow: 0 0 8px var(--pink);
-        }
-
-        .biometric-container {
-            height: 55%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .thumbprint-btn {
-            width: 110px;
-            height: 130px;
-            background: transparent;
-            border: 2px dashed var(--pink);
-            border-radius: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            outline: none;
-            touch-action: none; /* Stops webview from moving under finger pressure */
-        }
-
-        .thumbprint-btn svg {
-            width: 75px;
-            fill: var(--pink);
-            filter: drop-shadow(0 0 5px var(--pink));
-        }
-
-        .scan-bar {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background-color: var(--pink);
-            box-shadow: 0 0 10px var(--pink);
-            animation: scanUpDown 2s infinite ease-in-out;
-            display: none;
-        }
-
-        .status-text {
-            color: var(--pink);
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            height: 24px;
-        }
-
-        /* Screen 2: Dynamic Scan Split */
-        #screen-two {
-            padding: 20px;
-            height: 100dvh;
-        }
-
-        .identity-header {
-            text-align: center;
-            font-size: 2rem;
-            color: var(--cyan);
-            font-weight: bold;
-            letter-spacing: 4px;
-            margin-bottom: 20px;
-            animation: blink 0.5s infinite alternate;
-            text-shadow: 0 0 10px var(--cyan);
-            visibility: hidden;
-        }
-
-        .split-container {
-            display: flex;
-            flex: 1;
-            width: 100%;
-            height: calc(100% - 60px);
-            gap: 20px;
-        }
-
-        .left-panel, .right-panel {
-            flex: 1;
-            border: 1px solid #333;
-            background: #0a0a0a;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .body-scan-container {
             width: 100%;
             height: 100%;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 24px;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- SCREEN 1: THE SCANNER --- */
+        .terminal-header {
+            color: var(--cyan);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .alert-banner {
+            color: var(--pink);
+            font-size: 0.9rem;
+            margin-bottom: 40px;
+            animation: flashText 1.5s infinite;
+        }
+
+        .scanner-container {
             position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .scanner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed var(--cyan);
+            border-radius: 50%;
+            animation: spinRing 20s linear infinite;
+        }
+
+        .thumbprint-pad {
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 242, 254, 0.05);
+            border: 2px solid var(--cyan);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 20px rgba(0, 242, 254, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        .thumbprint-pad:active {
+            transform: scale(0.96);
+            background: rgba(255, 0, 127, 0.15);
+            border-color: var(--pink);
+            box-shadow: inset 0 0 20px rgba(255, 0, 127, 0.4);
+        }
+
+        .thumbprint-icon {
+            width: 64px;
+            height: 64px;
+            fill: var(--cyan);
+            transition: fill 0.3s;
+        }
+
+        .thumbprint-pad:active .thumbprint-icon {
+            fill: var(--pink);
         }
 
         .laser-line {
             position: absolute;
-            left: 0;
             width: 100%;
-            height: 3px;
-            background: var(--cyan);
+            height: 4px;
+            background: linear-gradient(180deg, transparent, var(--cyan));
             box-shadow: 0 0 12px var(--cyan);
-            animation: scanUpDown 2.5s infinite ease-in-out;
-            z-index: 5;
-        }
-
-        .reveal-box {
-            position: relative;
-            width: auto;
-            height: 85%;
-            aspect-ratio: 108 / 191;
-            overflow: hidden;
-        }
-
-        .reveal-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .reveal-curtain {
-            position: absolute;
             top: 0;
             left: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .scanning .laser-line {
+            opacity: 1;
+            animation: laserScan 2s ease-in-out infinite;
+        }
+
+        .status-log {
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            height: 20px;
+            text-align: center;
+            max-width: 300px;
+        }
+
+        /* --- SCREEN 2: THE ID BADGE LAYOUT --- */
+        .mccropolis-logo-container {
+            animation: bootUpPulse 2s ease-out alternate infinite;
+            margin-bottom: 20px;
+        }
+
+        .badge-frame {
             width: 100%;
-            height: 100%;
-            background-color: #0a0a0a;
-            transition: transform linear;
-            transform-origin: bottom;
-        }
-
-        /* Screen 3: Tactical Dashboard Layout Optimized */
-        #screen-three {
+            max-width: 340px;
+            background: rgba(10, 10, 18, 0.85);
+            border: 2px solid var(--cyan);
+            border-radius: 16px;
             padding: 20px;
-            height: 100dvh;
-            gap: 15px;
-        }
-
-        .dashboard-grid {
-            display: flex;
-            flex: 1;
-            gap: 15px;
-            width: 100%;
-            min-height: 0; /* Keeps layout items from forcing out of viewport margins */
-        }
-
-        .dash-card {
-            flex: 1;
-            background: #0d0d0d;
-            border: 1px solid #222;
-            padding: 20px;
-            border-radius: 5px;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.15);
             position: relative;
+        }
+
+        .badge-tag {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--pink);
+            color: #white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+
+        .badge-profile-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 15px;
+            align-items: center;
+        }
+
+        .badge-photo-box {
+            width: 90px;
+            height: 110px;
+            border: 1px solid var(--text-gray);
+            background: #141424;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
 
-        .dash-card::before {
+        .badge-photo-box::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; width: 10px; height: 10px;
-            border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan);
+            width: 12px;
+            height: 12px;
+            border-top: 2px solid var(--cyan);
+            border-left: 2px solid var(--cyan);
+            top: 4px; left: 4px;
         }
 
-        .profile-section {
-            display: flex;
-            gap: 20px;
-            align-items: center;
+        .photo-silhouette {
+            width: 50px;
+            height: 50px;
+            fill: var(--text-gray);
+            opacity: 0.4;
         }
 
-        .profile-pic {
-            width: 110px;
-            height: 130px;
-            border: 2px solid var(--cyan);
-            object-fit: cover;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-        }
-
-        .credentials {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #ccc;
-        }
-
-        .credentials strong {
+        .photo-caption {
+            font-size: 0.55rem;
             color: var(--cyan);
-            text-shadow: 0 0 2px var(--cyan);
+            margin-top: 8px;
+            letter-spacing: 1px;
         }
 
-        .emblem-wrapper {
-            flex: 1;
+        .badge-details {
+            flex-grow: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 600px;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .custom-logo {
-            width: 480px; /* Scaled up 3x from original 160px */
-            height: 480px; /* Scaled up 3x from original 160px */
-            object-fit: contain;
-            animation: spinY 4s infinite linear;
-            transform-style: preserve-3d;
-            filter: drop-shadow(0 0 15px var(--pink));
-        }
-
-        .countdown-footer {
-            width: 100%;
-            height: 110px; /* Expanded slightly to house the taller doubled text elements comfortably */
-            background: #000;
-            border: 1px solid rgba(255, 0, 127, 0.4);
+        .detail-group {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.8rem; /* Doubled text scale parameters */
-            color: var(--pink);
-            font-weight: bold;
-            text-shadow: 0 0 12px var(--pink);
-            letter-spacing: 2px;
-            flex-shrink: 0; /* Protects bottom banner from squishing down */
+            flex-direction: column;
         }
 
-        .countdown-segment {
-            display: inline-block;
-            margin: 0 12px;
-        }
-
-        .countdown-label {
-            font-size: 1.3rem; /* Scaled cleanly alongside larger numerals */
-            color: rgba(255, 0, 127, 0.6);
+        .detail-label {
+            font-size: 0.6rem;
+            color: var(--text-gray);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-left: 6px;
         }
 
-        @keyframes blink {
-            0% { opacity: 1; }
-            100% { opacity: 0.2; }
+        .detail-value {
+            font-size: 0.95rem;
+            color: #ffffff;
+            font-weight: bold;
         }
 
-        @keyframes scanUpDown {
-            0% { top: 0%; }
-            50% { top: 100%; }
-            100% { top: 0%; }
+        .detail-value.highlight {
+            color: var(--cyan);
         }
 
-        @keyframes spinY {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(360deg); }
+        .badge-footer-code {
+            margin-top: 24px;
+            border-top: 1px dashed rgba(162, 162, 186, 0.3);
+            padding-top: 12px;
+            font-size: 0.65rem;
+            color: var(--text-gray);
+            display: flex;
+            justify-content: space-between;
         }
 
-        /* Fallback adjustments if viewport flips vertical */
-        @media (max-width: 768px) {
-            .split-container { flex-direction: column; }
-            .dashboard-grid { flex-direction: column; }
-            #terminal-log { height: 35%; }
-            .biometric-container { height: 65%; }
+        /* --- ANIMATIONS --- */
+        @keyframes spinRing { 100% { transform: rotate(360deg); } }
+        @keyframes flashText { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes bootUpPulse { 0% { opacity: 0.85; filter: brightness(0.9); } 100% { opacity: 1; filter: brightness(1.1); } }
+        @keyframes laserScan {
+            0%, 100% { top: 0%; opacity: 0; }
+            5% { opacity: 1; }
+            95% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div id="screen-gate" class="screen active">
-        <button class="gate-btn" onclick="initializeSystem()">INITIALIZE SECURE UPLINK</button>
-    </div>
-
-    <div id="screen-one" class="screen">
-        <div class="scanning-overlay">SCANNING BIOMETRIC SIGNATURE...</div>
-        <div id="terminal-log"></div>
-        <div class="biometric-container">
-            <button class="thumbprint-btn" id="thumb-btn" onmousedown="startBiometricScan(event)" ontouchstart="startBiometricScan(event)" onmouseup="cancelBiometricScan()" ontouchend="cancelBiometricScan()">
-                <div class="scan-bar" id="scanner-line"></div>
-                <svg viewBox="0 0 24 24">
-                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"/>
+    <div id="scanner-screen" class="screen">
+        <div class="terminal-header">AUTHENTICATION NODE // TERMINAL 8</div>
+        <div class="alert-banner">CRITICAL LOCKDOWN RECONVERSION IN STATUS</div>
+        
+        <div class="scanner-container" id="scanner-button">
+            <div class="scanner-ring"></div>
+            <div class="thumbprint-pad">
+                <svg class="thumbprint-icon" viewBox="0 0 24 24">
+                    <path d="M12,2A10,10,0,0,0,2,12a1,1,0,0,0,2,0,8,8,0,0,1,16,0,1,1,0,0,0,2,0A10,10,0,0,0,12,2ZM9,12a3,3,0,0,1,6,0,1,1,0,0,0,2,0,5,5,0,0,0-10,0,1,1,0,0,0,2,0Zm3-6a6,6,0,0,0-6,6,1,1,0,0,0,2,0,4,4,0,0,1,8,0,1,1,0,0,0,2,0A6,6,0,0,0,12,6Zm0,10a2,2,0,0,0,2-2,1,1,0,0,0-2,0,1,1,0,0,1-2,0,1,1,0,0,0-2,0A2,2,0,0,0,12,16Z"/>
                 </svg>
-            </button>
-            <div class="status-text" id="scan-status">PLACE THUMB TO ACCESS</div>
-        </div>
-    </div>
-
-    <div id="screen-two" class="screen">
-        <div class="identity-header" id="ident-header">IDENTITY CONFIRMED</div>
-        <div class="split-container">
-            <div class="left-panel">
-                <div class="body-scan-container">
-                    <div class="laser-line"></div>
-                    <img src="https://github.com/mateo1919/dashboard-images/blob/main/face%20blue.jpg?raw=true" style="height: 90%; width: 90%; object-fit: contain; filter: drop-shadow(0 0 6px var(--cyan));" alt="Left Panel Scan Data">
-                </div>
-            </div>
-            <div class="right-panel">
-                <div class="reveal-box">
-                    <img src="https://github.com/mateo1919/dashboard-images/blob/main/image%20dashboard.jpg?raw=true" alt="Claire narrow.jpg">
-                    <div class="reveal-curtain" id="image-curtain"></div>
-                </div>
+                <div class="laser-line"></div>
             </div>
         </div>
+
+        <div class="status-log" id="terminal-log">HOLD CONTACT TO INITIALIZE SCAN PROTOCOL</div>
     </div>
 
-    <div id="screen-three" class="screen">
-        <div class="dashboard-grid">
-            <div class="dash-card">
-                <h3 style="color:var(--cyan); letter-spacing:1px;">ACCESSING FILE ON AGENT CLAIRE</h3>
-                <div class="profile-section">
-                    <img src="https://github.com/mateo1919/dashboard-images/blob/main/image%20dashboard.jpg?raw=true" class="profile-pic" alt="Agent Claire Profile">
-                    <div class="credentials">
-                        <p><strong>DESIGNATION:</strong> Agent C-08</p>
-                        <p><strong>CLEARANCE:</strong> Level 8 (Advanced)</p>
-                        <p><strong>STATUS:</strong> Active / On Mission</p>
-                        <p><strong>ASSIGNMENT:</strong> Celebrating</p>
-                        <p><strong>SPECIALIZATION:</strong> Advanced Reading & Code Breaking</p>
+    <div id="badge-screen" class="screen hidden">
+        
+        <div class="mccropolis-logo-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" style="max-width: 300px; filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.5));">
+                <defs>
+                    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00f2fe" />
+                        <stop offset="100%" stop-color="#4facfe" />
+                    </linearGradient>
+                    <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ff007f" />
+                        <stop offset="100%" stop-color="#ff00ff" />
+                    </linearGradient>
+                </defs>
+                <g transform="translate(10, 10)">
+                    <polygon points="50,5 90,28 90,72 50,95 10,72 10,28" fill="none" stroke="url(#cyanGrad)" stroke-width="2.5" stroke-dasharray="4 2" />
+                    <polygon points="50,50 90,28 50,5 10,28" fill="none" stroke="url(#cyanGrad)" stroke-width="1.5" opacity="0.4" />
+                    <polygon points="10,28 10,72 50,95 50,50" fill="none" stroke="url(#cyanGrad)" stroke-width="1.5" opacity="0.6" />
+                    <polygon points="90,28 90,72 50,95 50,50" fill="none" stroke="url(#cyanGrad)" stroke-width="1.5" opacity="0.6" />
+                    <circle cx="50" cy="50" r="5" fill="url(#pinkGrad)" />
+                    <line x1="50" y1="50" x2="50" y2="95" stroke="url(#pinkGrad)" stroke-width="2" />
+                    <line x1="50" y1="50" x2="10" y2="28" stroke="url(#pinkGrad)" stroke-width="1" opacity="0.5" />
+                    <line x1="50" y1="50" x2="90" y2="28" stroke="url(#pinkGrad)" stroke-width="1" opacity="0.5" />
+                </g>
+                <g transform="translate(120, 45)">
+                    <text x="0" y="10" font-family="'Courier New', Courier, monospace" font-size="24" font-weight="900" fill="#00f2fe" letter-spacing="3">McCROPOLIS</text>
+                    <text x="2" y="32" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="bold" fill="#ffffff" letter-spacing="7" opacity="0.9">LABORATORIES</text>
+                    <line x1="0" y1="42" x2="225" y2="42" stroke="url(#cyanGrad)" stroke-width="1" stroke-dasharray="20 5 5 5" />
+                    <rect x="235" y="33" width="6" height="6" fill="#ff007f" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="badge-frame">
+            <div class="badge-tag">ACTIVE</div>
+            <div style="font-size: 0.75rem; color: var(--cyan); letter-spacing: 1px; border-bottom: 1px solid rgba(0, 242, 254, 0.3); padding-bottom: 6px;">
+                FIELD OPERATIVE CREDENTIAL
+            </div>
+
+            <div class="badge-profile-row">
+                <div class="badge-photo-box">
+                    <svg class="photo-silhouette" viewBox="0 0 24 24">
+                        <path d="M12,12A5,5,0,1,0,7,7,5,5,0,0,0,12,12Zm0,2c-3.33,0-10,1.67-10,5v2H22V19C22,15.67,15.33,14,12,14Z"/>
+                    </svg>
+                    <div class="photo-caption">AGENT C-08</div>
+                </div>
+
+                <div class="badge-details">
+                    <div class="detail-group">
+                        <div class="detail-label">Codename / Asset ID</div>
+                        <div class="detail-value highlight">Agent C-08</div>
+                    </div>
+                    <div class="detail-group">
+                        <div class="detail-label">Assigned Operative</div>
+                        <div class="detail-value">Claire</div>
+                    </div>
+                    <div class="detail-group">
+                        <div class="detail-label">Clearance Tier</div>
+                        <div class="detail-value">Level 8 (Advanced)</div>
                     </div>
                 </div>
-                <div style="font-size:11px; color:#555; border-top:1px solid #222; padding-top:10px;">
-                    WARNING: Internal Agency Classified Employee Data. Unauthorized Access Will Activate Party Pooper Protocols.
-                </div>
             </div>
 
-            <div class="dash-card" style="align-items: center; justify-content: center;">
-                <h3 style="color:var(--pink); letter-spacing:1px; width: 100%; text-align: center;">The Agency Shield</h3>
-                <div class="emblem-wrapper">
-                    <img class="custom-logo" src="https://github.com/mateo1919/dashboard-images/blob/main/agency-no%20background.png?raw=true" alt="IMF Logo Emblem">
-                </div>
+            <div class="badge-footer-code">
+                <span>SYS.LOC: AREA 8.0</span>
+                <span>DATA.KEY // 06-15-2026</span>
             </div>
         </div>
-        <div class="countdown-footer" id="countdown-clock"></div>
     </div>
 
     <script>
-        class AudioSynth {
-            constructor() {
-                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            playBeep(freq, duration, type="sine") {
-                if (this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
-                let osc = this.ctx.createOscillator();
-                let gain = this.ctx.createGain();
-                osc.type = type;
-                osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.00001, this.ctx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + duration);
-            }
-            playScreamEffect() {
-                let interval = setInterval(() => {
-                    this.playBeep(Math.random() * 800 + 400, 0.05, 'sawtooth');
-                }, 40);
-                setTimeout(() => clearInterval(interval), 2500);
-            }
-        }
+        const scanBtn = document.getElementById('scanner-button');
+        const screen1 = document.getElementById('scanner-screen');
+        const screen2 = document.getElementById('badge-screen');
+        const logText = document.getElementById('terminal-log');
 
-        let audio;
-        let scanTimer;
-        let isAuthorized = false;
-
-        function initializeSystem() {
-            audio = new AudioSynth();
-            
-            let elem = document.documentElement;
-            if (elem.requestFullscreen) { elem.requestFullscreen(); }
-            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
-
-            document.getElementById('screen-gate').classList.remove('active');
-            document.getElementById('screen-one').classList.add('active');
-            
-            audio.playScreamEffect();
-            runTerminalLogs();
-        }
-
+        let scanTimer = null;
         const logs = [
-            "SCANNING INTERNET FOR AGENT CLAIRE... [FOUND]",
-            "ESTABLISHING TOP SECRET BIRTHDAY UPLINK...",
-            "WARNING: CAKE DETECTORS BLOWING UP THE RADAR!",
-            "DECRYPTING ULTIMATE PARTY PROTOCOLS...",
-            "DEFEATING EVIL DR. BORING'S SNEAKY FIREWALLS... [BOOM! OK]",
-            "ALERT: CANDLE COUNT IS RISING RAPIDLY!",
-            "DOWNLOADING INTEL PACKET: 'HOW TO BE AN ELITE 8-YEAR-OLD'...",
-            "LOCALIZING THE DREADED ICE CREAM SEIZURE SUB-ROUTINE...",
-            "CONFIRMING DOSSIER DESIGNATION: AGENT C-08...",
-            "CRITICAL PROTOCOL REQUEST: BIOMETRIC IDENTITY CONFIRMATION REQUIRED."
+            "LINKING ENCRYPTION PIPES...",
+            "ISOLATING VERIFICATION FIELD...",
+            "WIREFRAME BIOMETRIC MATRIX MATCHED.",
+            "UPGRADING STATUS TO ACTIVE AGENT...",
+            "DECRYPTING SECURITY BADGE LAYER..."
         ];
 
-        function runTerminalLogs() {
-            const container = document.getElementById('terminal-log');
-            let logIndex = 0;
-            
-            function addLogLine() {
-                if (logIndex < logs.length) {
-                    container.innerHTML += `> ${logs[logIndex]}\n`;
-                    container.scrollTop = container.scrollHeight;
-                    audio.playBeep(600, 0.03, 'square');
-                    logIndex++;
-                    setTimeout(addLogLine, Math.random() * 250 + 150);
-                }
-            }
-            addLogLine();
-        }
-
-        function startBiometricScan(e) {
-            if (e && e.cancelable) e.preventDefault();
-            if (isAuthorized) return;
-
-            document.getElementById('scanner-line').style.display = 'block';
-            document.getElementById('scan-status').innerText = "PROCESSING...";
-            document.getElementById('scan-status').style.color = "var(--cyan)";
-            
+        function startScan(e) {
+            e.preventDefault();
+            scanBtn.classList.add('scanning');
             let progress = 0;
-            clearInterval(scanTimer);
             
+            logText.innerText = logs[0];
+            logText.style.color = "var(--pink)";
+
             scanTimer = setInterval(() => {
-                progress += 10;
-                audio.playBeep(200 + progress * 5, 0.05, 'sine');
-                if (progress >= 100) {
+                progress++;
+                if (progress < logs.length) {
+                    logText.innerText = logs[progress];
+                } else {
                     clearInterval(scanTimer);
-                    isAuthorized = true;
-                    transitionToPageTwo();
+                    completeScan();
                 }
-            }, 250);
+            }, 750);
         }
 
-        function cancelBiometricScan() {
-            if (isAuthorized) return;
-            
-            clearInterval(scanTimer);
-            const line = document.getElementById('scanner-line');
-            const status = document.getElementById('scan-status');
-            
-            if (line) line.style.display = 'none';
-            if (status) {
-                status.innerText = "PLACE THUMB TO ACCESS";
-                status.style.color = "var(--pink)";
-            }
-        }
-
-        function transitionToPageTwo() {
-            document.getElementById('screen-one').classList.remove('active');
-            document.getElementById('screen-two').classList.add('active');
-            
-            let intervalBeeps = setInterval(() => {
-                audio.playBeep(800, 0.02, 'sine');
-            }, 80);
-
-            const curtain = document.getElementById('image-curtain');
-            let position = 100;
-            
-            let revealInterval = setInterval(() => {
-                position -= 0.8; 
-                curtain.style.transform = `scaleY(${position / 100})`;
+        function cancelScan(e) {
+            if (scanTimer) {
+                clearInterval(scanTimer);
+                scanTimer = null;
+                scanBtn.classList.remove('scanning');
+                logText.innerText = "SCAN TERMINATED. UPLINK DROPPED.";
+                logText.style.color = "var(--pink)";
                 
-                if (position <= 0) {
-                    clearInterval(revealInterval);
-                    clearInterval(intervalBeeps);
-                    
-                    document.getElementById('ident-header').style.visibility = 'visible';
-                    audio.playBeep(880, 0.3, 'square');
-                    setTimeout(() => audio.playBeep(1100, 0.5, 'square'), 150);
-                    
-                    setTimeout(transitionToDashboard, 3000);
-                }
-            }, 35);
-        }
-
-        function transitionToDashboard() {
-            document.getElementById('screen-two').classList.remove('active');
-            document.getElementById('screen-three').classList.add('active');
-            startCountdown();
-        }
-
-        function startCountdown() {
-            const targetDate = new Date("June 20, 2026 09:00:00").getTime();
-            const container = document.getElementById('countdown-clock');
-
-            function updateClock() {
-                const now = new Date().getTime();
-                const difference = targetDate - now;
-
-                if (difference <= 0) {
-                    container.innerHTML = "MISSION ACTIVE: GO TIME";
-                    return;
-                }
-
-                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-                const dStr = days.toString().padStart(2, '0');
-                const hStr = hours.toString().padStart(2, '0');
-                const mStr = minutes.toString().padStart(2, '0');
-                const sStr = seconds.toString().padStart(2, '0');
-
-                container.innerHTML = `
-                    T-MINUS 
-                    <span class="countdown-segment">${dStr}<span class="countdown-label">Days</span></span>:
-                    <span class="countdown-segment">${hStr}<span class="countdown-label">Hours</span></span>:
-                    <span class="countdown-segment">${mStr}<span class="countdown-label">Minutes</span></span>:
-                    <span class="countdown-segment">${sStr}<span class="countdown-label">Seconds</span></span>
-                `;
+                setTimeout(() => {
+                    if(!scanBtn.classList.contains('scanning')) {
+                        logText.innerText = "HOLD CONTACT TO INITIALIZE SCAN PROTOCOL";
+                        logText.style.color = "var(--text-gray)";
+                    }
+                }, 1500);
             }
-
-            updateClock();
-            setInterval(updateClock, 1000);
         }
+
+        function completeScan() {
+            scanBtn.classList.remove('scanning');
+            logText.innerText = "ACCESS GRANTED. BOOTING CORE CARD.";
+            logText.style.color = "var(--cyan)";
+
+            setTimeout(() => {
+                screen1.style.opacity = '0';
+                setTimeout(() => {
+                    screen1.classList.add('hidden');
+                    screen2.classList.remove('hidden');
+                    screen2.style.opacity = '1';
+                }, 500);
+            }, 1000);
+        }
+
+        // Handle both standard mouse behavior and multi-touch mobile sensors seamlessly
+        scanBtn.addEventListener('mousedown', startScan);
+        scanBtn.addEventListener('mouseup', cancelScan);
+        scanBtn.addEventListener('mouseleave', cancelScan);
+
+        scanBtn.addEventListener('touchstart', startScan);
+        scanBtn.addEventListener('touchend', cancelScan);
+        scanBtn.addEventListener('touchcancel', cancelScan);
     </script>
 </body>
 </html>
