@@ -158,12 +158,7 @@
             max-width: 300px;
         }
 
-        /* --- SCREEN 2: THE ID BADGE LAYOUT --- */
-        .mccropolis-logo-container {
-            animation: bootUpPulse 2s ease-out alternate infinite;
-            margin-bottom: 20px;
-        }
-
+        /* --- SCREEN 2: THE PREVIOUS ID BADGE --- */
         .badge-frame {
             width: 100%;
             max-width: 340px;
@@ -180,7 +175,7 @@
             top: -12px;
             right: 20px;
             background: var(--pink);
-            color: #white;
+            color: white;
             font-size: 0.7rem;
             font-weight: bold;
             padding: 2px 8px;
@@ -241,210 +236,8 @@
         .detail-group {
             display: flex;
             flex-direction: column;
+            text-align: left;
         }
 
         .detail-label {
-            font-size: 0.6rem;
-            color: var(--text-gray);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .detail-value {
-            font-size: 0.95rem;
-            color: #ffffff;
-            font-weight: bold;
-        }
-
-        .detail-value.highlight {
-            color: var(--cyan);
-        }
-
-        .badge-footer-code {
-            margin-top: 24px;
-            border-top: 1px dashed rgba(162, 162, 186, 0.3);
-            padding-top: 12px;
-            font-size: 0.65rem;
-            color: var(--text-gray);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes spinRing { 100% { transform: rotate(360deg); } }
-        @keyframes flashText { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        @keyframes bootUpPulse { 0% { opacity: 0.85; filter: brightness(0.9); } 100% { opacity: 1; filter: brightness(1.1); } }
-        @keyframes laserScan {
-            0%, 100% { top: 0%; opacity: 0; }
-            5% { opacity: 1; }
-            95% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="scanner-screen" class="screen">
-        <div class="terminal-header">AUTHENTICATION NODE // TERMINAL 8</div>
-        <div class="alert-banner">CRITICAL LOCKDOWN RECONVERSION IN STATUS</div>
-        
-        <div class="scanner-container" id="scanner-button">
-            <div class="scanner-ring"></div>
-            <div class="thumbprint-pad">
-                <svg class="thumbprint-icon" viewBox="0 0 24 24">
-                    <path d="M12,2A10,10,0,0,0,2,12a1,1,0,0,0,2,0,8,8,0,0,1,16,0,1,1,0,0,0,2,0A10,10,0,0,0,12,2ZM9,12a3,3,0,0,1,6,0,1,1,0,0,0,2,0,5,5,0,0,0-10,0,1,1,0,0,0,2,0Zm3-6a6,6,0,0,0-6,6,1,1,0,0,0,2,0,4,4,0,0,1,8,0,1,1,0,0,0,2,0A6,6,0,0,0,12,6Zm0,10a2,2,0,0,0,2-2,1,1,0,0,0-2,0,1,1,0,0,1-2,0,1,1,0,0,0-2,0A2,2,0,0,0,12,16Z"/>
-                </svg>
-                <div class="laser-line"></div>
-            </div>
-        </div>
-
-        <div class="status-log" id="terminal-log">HOLD CONTACT TO INITIALIZE SCAN PROTOCOL</div>
-    </div>
-
-    <div id="badge-screen" class="screen hidden">
-        
-        <div class="mccropolis-logo-container">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" style="max-width: 300px; filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.5));">
-                <defs>
-                    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#00f2fe" />
-                        <stop offset="100%" stop-color="#4facfe" />
-                    </linearGradient>
-                    <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#ff007f" />
-                        <stop offset="100%" stop-color="#ff00ff" />
-                    </linearGradient>
-                </defs>
-                <g transform="translate(10, 10)">
-                    <polygon points="50,5 90,28 90,72 50,95 10,72 10,28" fill="none" stroke="url(#cyanGrad)" stroke-width="2.5" stroke-dasharray="4 2" />
-                    <polygon points="50,50 90,28 50,5 10,28" fill="none" stroke="url(#cyanGrad)" stroke-width="1.5" opacity="0.4" />
-                    <polygon points="10,28 10,72 50,95 50,50" fill="none" stroke="url(#cyanGrad)" stroke-width="1.5" opacity="0.6" />
-                    <polygon points="90,28 90,72 50,95 50,50" fill="none" stroke="url(#cyanGrad)" stroke-width="1.5" opacity="0.6" />
-                    <circle cx="50" cy="50" r="5" fill="url(#pinkGrad)" />
-                    <line x1="50" y1="50" x2="50" y2="95" stroke="url(#pinkGrad)" stroke-width="2" />
-                    <line x1="50" y1="50" x2="10" y2="28" stroke="url(#pinkGrad)" stroke-width="1" opacity="0.5" />
-                    <line x1="50" y1="50" x2="90" y2="28" stroke="url(#pinkGrad)" stroke-width="1" opacity="0.5" />
-                </g>
-                <g transform="translate(120, 45)">
-                    <text x="0" y="10" font-family="'Courier New', Courier, monospace" font-size="24" font-weight="900" fill="#00f2fe" letter-spacing="3">McCROPOLIS</text>
-                    <text x="2" y="32" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="bold" fill="#ffffff" letter-spacing="7" opacity="0.9">LABORATORIES</text>
-                    <line x1="0" y1="42" x2="225" y2="42" stroke="url(#cyanGrad)" stroke-width="1" stroke-dasharray="20 5 5 5" />
-                    <rect x="235" y="33" width="6" height="6" fill="#ff007f" />
-                </g>
-            </svg>
-        </div>
-
-        <div class="badge-frame">
-            <div class="badge-tag">ACTIVE</div>
-            <div style="font-size: 0.75rem; color: var(--cyan); letter-spacing: 1px; border-bottom: 1px solid rgba(0, 242, 254, 0.3); padding-bottom: 6px;">
-                FIELD OPERATIVE CREDENTIAL
-            </div>
-
-            <div class="badge-profile-row">
-                <div class="badge-photo-box">
-                    <svg class="photo-silhouette" viewBox="0 0 24 24">
-                        <path d="M12,12A5,5,0,1,0,7,7,5,5,0,0,0,12,12Zm0,2c-3.33,0-10,1.67-10,5v2H22V19C22,15.67,15.33,14,12,14Z"/>
-                    </svg>
-                    <div class="photo-caption">AGENT C-08</div>
-                </div>
-
-                <div class="badge-details">
-                    <div class="detail-group">
-                        <div class="detail-label">Codename / Asset ID</div>
-                        <div class="detail-value highlight">Agent C-08</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Assigned Operative</div>
-                        <div class="detail-value">Claire</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Clearance Tier</div>
-                        <div class="detail-value">Level 8 (Advanced)</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="badge-footer-code">
-                <span>SYS.LOC: AREA 8.0</span>
-                <span>DATA.KEY // 06-15-2026</span>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const scanBtn = document.getElementById('scanner-button');
-        const screen1 = document.getElementById('scanner-screen');
-        const screen2 = document.getElementById('badge-screen');
-        const logText = document.getElementById('terminal-log');
-
-        let scanTimer = null;
-        const logs = [
-            "LINKING ENCRYPTION PIPES...",
-            "ISOLATING VERIFICATION FIELD...",
-            "WIREFRAME BIOMETRIC MATRIX MATCHED.",
-            "UPGRADING STATUS TO ACTIVE AGENT...",
-            "DECRYPTING SECURITY BADGE LAYER..."
-        ];
-
-        function startScan(e) {
-            e.preventDefault();
-            scanBtn.classList.add('scanning');
-            let progress = 0;
-            
-            logText.innerText = logs[0];
-            logText.style.color = "var(--pink)";
-
-            scanTimer = setInterval(() => {
-                progress++;
-                if (progress < logs.length) {
-                    logText.innerText = logs[progress];
-                } else {
-                    clearInterval(scanTimer);
-                    completeScan();
-                }
-            }, 750);
-        }
-
-        function cancelScan(e) {
-            if (scanTimer) {
-                clearInterval(scanTimer);
-                scanTimer = null;
-                scanBtn.classList.remove('scanning');
-                logText.innerText = "SCAN TERMINATED. UPLINK DROPPED.";
-                logText.style.color = "var(--pink)";
-                
-                setTimeout(() => {
-                    if(!scanBtn.classList.contains('scanning')) {
-                        logText.innerText = "HOLD CONTACT TO INITIALIZE SCAN PROTOCOL";
-                        logText.style.color = "var(--text-gray)";
-                    }
-                }, 1500);
-            }
-        }
-
-        function completeScan() {
-            scanBtn.classList.remove('scanning');
-            logText.innerText = "ACCESS GRANTED. BOOTING CORE CARD.";
-            logText.style.color = "var(--cyan)";
-
-            setTimeout(() => {
-                screen1.style.opacity = '0';
-                setTimeout(() => {
-                    screen1.classList.add('hidden');
-                    screen2.classList.remove('hidden');
-                    screen2.style.opacity = '1';
-                }, 500);
-            }, 1000);
-        }
-
-        // Handle both standard mouse behavior and multi-touch mobile sensors seamlessly
-        scanBtn.addEventListener('mousedown', startScan);
-        scanBtn.addEventListener('mouseup', cancelScan);
-        scanBtn.addEventListener('mouseleave', cancelScan);
-
-        scanBtn.addEventListener('touchstart', startScan);
-        scanBtn.addEventListener('touchend', cancelScan);
-        scanBtn.addEventListener('touchcancel', cancelScan);
-    </script>
-</body>
-</html>
+            font
